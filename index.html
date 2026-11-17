@@ -1,563 +1,627 @@
+```html
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>مُغَامَرَةُ الأَلِف - لُعْبَةٌ تَعْلِيمِيَّةٌ تَفَاعُلِيَّةٌ</title>
-  <!-- مكتبة Tailwind CSS -->
+  <title>مُغَامَرَةُ الأَلِف - لُعْبَةٌ تَعْلِيمِيَّةٌ</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- خطوط عربية دائرية وواضحة من Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@700&family=Cairo:wght@600;700;800;900&family=Tajawal:wght@500;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@700&family=Cairo:wght@600;700;800;900&family=Fredoka:wght@600;700&display=swap" rel="stylesheet">
 
   <style>
     :root {
-      --sky-top: #38bdf8;
-      --sky-bottom: #bae6fd;
-      --grass-light: #86efac;
-      --grass-dark: #22c55e;
+      --frame-gold: #f8c646;
+      --board-bg: #7c768e;
+      --board-bg-dark: #6c667e;
+      --panel-dark: #5b556b;
+      --dice-oval: #474254;
+      --tile-white: #ffffff;
+      --tile-grey: #d9d9de;
+      --pink-badge: #e5839a;
+      --blue-badge: #5ea8e6;
+      --green-badge: #6bc267;
+      --yellow-badge: #f6c253;
     }
 
     * {
       box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
     }
 
     body {
-      font-family: 'Tajawal', 'Cairo', sans-serif;
-      background: linear-gradient(180deg, #38bdf8 0%, #7dd3fc 42%, #e0f2fe 72%, #bbf7d0 73%, #4ade80 100%);
-      color: #1e293b;
+      font-family: 'Cairo', 'Fredoka', sans-serif;
+      background-color: var(--frame-gold);
+      margin: 0;
+      padding: 8px;
       min-height: 100vh;
-      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
       user-select: none;
       -webkit-user-select: none;
-      position: relative;
+      overflow-x: hidden;
     }
 
-    .font-script {
+    @media (min-width: 768px) {
+      body {
+        padding: 14px;
+      }
+    }
+
+    .font-num {
+      font-family: 'Fredoka', 'Cairo', sans-serif;
+    }
+
+    .font-arabic-letter {
       font-family: 'Amiri', 'Cairo', serif;
     }
 
-    /* خلفية طبيعية متحركة بأسلوب Genially */
-    @keyframes floatCloud {
-      0% { transform: translateX(0px); }
-      50% { transform: translateX(-28px); }
-      100% { transform: translateX(0px); }
-    }
-
-    @keyframes floatCloudSlow {
-      0% { transform: translateX(0px); }
-      50% { transform: translateX(35px); }
-      100% { transform: translateX(0px); }
-    }
-
-    @keyframes spinSun {
-      from { transform: rotate(0deg); }
-      to { transform: rotate(360deg); }
-    }
-
-    .cloud-anim-1 { animation: floatCloud 11s ease-in-out infinite; }
-    .cloud-anim-2 { animation: floatCloudSlow 15s ease-in-out infinite; }
-    .sun-rays-spin { transform-origin: 70px 70px; animation: spinSun 36s linear infinite; }
-
-    /* إطار اللوحة والبطاقات التفاعلية */
-    .genially-card {
-      background: rgba(255, 255, 255, 0.94);
-      backdrop-filter: blur(8px);
-      border: 4px solid #ffffff;
-      box-shadow:
-        0 14px 32px rgba(14, 116, 144, 0.22),
-        0 4px 0 #cbd5e1;
-    }
-
-    .board-meadow {
-      background: linear-gradient(160deg, #ecfdf5 0%, #d1fae5 55%, #a7f3d0 100%);
-      border: 5px solid #ffffff;
-      box-shadow:
-        0 18px 36px rgba(6, 95, 70, 0.25),
-        inset 0 3px 10px rgba(255, 255, 255, 0.9);
-    }
-
-    /* خانات المسار الحجرية ثلاثية الأبعاد */
-    .tile {
+    /* الإطار الرئيسي ذو الخلفية البنفسجية الرمادية الناعمة */
+    .game-frame {
+      flex: 1;
+      background: radial-gradient(circle at 50% 45%, #868098 0%, #7c768e 60%, #6d677f 100%);
+      border: 4px solid #353042;
+      border-radius: 14px;
       position: relative;
-      transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s ease;
-      box-shadow:
-        0 6px 0 rgba(15, 23, 42, 0.18),
-        0 9px 14px rgba(15, 23, 42, 0.12),
-        inset 0 3px 5px rgba(255, 255, 255, 0.85);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: inset 0 0 40px rgba(35, 30, 48, 0.25);
     }
 
-    .tile:hover {
-      transform: translateY(-2px);
+    /* تأثير نسيج خفيف للخلفية */
+    .game-frame::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image: radial-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 0);
+      background-size: 18px 18px;
+      pointer-events: none;
+      z-index: 0;
     }
 
-    /* نبض الخانة المضيئة المستهدفة */
-    @keyframes targetPulse {
-      0%, 100% {
-        transform: scale(1.04);
-        box-shadow: 0 0 0 5px #facc15, 0 0 24px 8px rgba(250, 204, 21, 0.9);
-        border-color: #ffffff;
-      }
-      50% {
-        transform: scale(1.1);
-        box-shadow: 0 0 0 8px #f97316, 0 0 34px 14px rgba(249, 115, 22, 0.95);
-        border-color: #fef08a;
-      }
+    /* عنوان اللعبة بأسلوب طباشيري/كرتوني أبيض */
+    .chalk-title {
+      color: #f4f3f6;
+      text-shadow: 0 3px 0 rgba(53, 48, 66, 0.45);
+      letter-spacing: 0.5px;
     }
 
-    .tile-target {
-      animation: targetPulse 1.05s infinite ease-in-out;
-      cursor: pointer !important;
-      z-index: 25 !important;
+    /* الشكل البيضاوي الداكن للنرد في الزاوية العلوية */
+    .dice-medallion {
+      background: #474254;
+      border-radius: 52% 48% 50% 50% / 58% 54% 46% 42%;
+      box-shadow: 0 6px 0 rgba(35, 30, 48, 0.35);
+      transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+      cursor: pointer;
+    }
+    .dice-medallion:hover:not(.disabled) {
+      transform: scale(1.06) rotate(-3deg);
+    }
+    .dice-medallion:active:not(.disabled) {
+      transform: scale(0.95);
+    }
+    .dice-medallion.disabled {
+      opacity: 0.75;
+      cursor: not-allowed;
     }
 
-    .tile-drop-hover {
-      transform: scale(1.14) !important;
-      box-shadow: 0 0 0 9px #10b981, 0 0 36px 16px rgba(16, 185, 129, 0.95) !important;
+    /* النرد الأبيض المستدير داخل الميدالية */
+    @keyframes diceShake {
+      0% { transform: rotate(0deg) scale(1); }
+      20% { transform: rotate(-18deg) scale(1.12); }
+      40% { transform: rotate(16deg) scale(1.15); }
+      60% { transform: rotate(-12deg) scale(1.1); }
+      80% { transform: rotate(10deg) scale(1.05); }
+      100% { transform: rotate(0deg) scale(1); }
+    }
+    .dice-rolling {
+      animation: diceShake 0.65s ease-in-out;
     }
 
-    @keyframes hereBounce {
-      0%, 100% { transform: translateY(0) scale(1); }
-      50% { transform: translateY(-6px) scale(1.08); }
+    /* اللوحة الجانبية الداكنة للاعبين والبيادق */
+    .players-dock {
+      background-color: var(--panel-dark);
+      border-radius: 26px;
+      box-shadow: inset 0 3px 8px rgba(0, 0, 0, 0.22), 0 4px 12px rgba(0, 0, 0, 0.15);
     }
 
-    .here-badge {
-      animation: hereBounce 0.85s infinite ease-in-out;
-    }
-
-    /* البيادق التعبيرية (Mascots) */
-    .pawn-mascot {
-      width: 34px;
-      height: 38px;
+    /* رموز البيادق الحيوانية الدائرية */
+    .animal-token {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      border: 3px solid #2e293a;
       display: flex;
       align-items: center;
       justify-content: center;
-      filter: drop-shadow(0 4px 5px rgba(0, 0, 0, 0.32));
-      transition: transform 0.2s ease;
+      box-shadow: 0 4px 0 #2e293a, 0 6px 10px rgba(0,0,0,0.28);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
       position: relative;
+      background-color: #ffffff;
     }
 
-    @media (min-width: 640px) {
-      .pawn-mascot {
-        width: 40px;
-        height: 44px;
+    .board-pawn {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      border: 2.5px solid #2e293a;
+      box-shadow: 0 3px 0 #2e293a, 0 4px 8px rgba(0,0,0,0.35);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.2s ease;
+      z-index: 30;
+    }
+
+    @media (min-width: 1024px) {
+      .board-pawn {
+        width: 38px;
+        height: 38px;
       }
     }
 
-    @keyframes pawnActiveJump {
+    @keyframes pawnPulseJump {
       0%, 100% { transform: translateY(0) scale(1.12); }
-      50% { transform: translateY(-9px) scale(1.22); }
+      50% { transform: translateY(-8px) scale(1.24); }
     }
 
-    .pawn-draggable {
-      animation: pawnActiveJump 0.85s infinite ease-in-out;
+    .pawn-active-move {
+      animation: pawnPulseJump 0.8s infinite ease-in-out;
       cursor: grab;
-      z-index: 40;
       touch-action: none;
-      filter: drop-shadow(0 0 8px rgba(250, 204, 21, 0.95)) drop-shadow(0 6px 8px rgba(0,0,0,0.4));
+      box-shadow: 0 0 0 4px #f8c646, 0 0 18px 6px rgba(248, 198, 70, 0.9), 0 4px 0 #2e293a !important;
+      z-index: 45 !important;
     }
-
-    .pawn-draggable:active {
+    .pawn-active-move:active {
       cursor: grabbing;
     }
 
+    /* الخانات التفاعلية على المسار الحلزوني */
+    .track-tile-group {
+      cursor: default;
+      transition: transform 0.2s ease;
+    }
+
+    @keyframes targetTileGlow {
+      0%, 100% {
+        filter: drop-shadow(0 0 6px #f8c646) drop-shadow(0 0 14px rgba(248, 198, 70, 0.95));
+      }
+      50% {
+        filter: drop-shadow(0 0 12px #ffffff) drop-shadow(0 0 24px rgba(248, 198, 70, 1));
+      }
+    }
+
+    .tile-target-highlight {
+      cursor: pointer !important;
+      animation: targetTileGlow 0.95s infinite ease-in-out;
+    }
+
+    .tile-target-highlight .tile-shape {
+      stroke: #f8c646 !important;
+      stroke-width: 5px !important;
+    }
+
+    .tile-drop-hover .tile-shape {
+      fill: #fef08a !important;
+      stroke: #22c55e !important;
+      stroke-width: 6px !important;
+    }
+
+    /* شبح البيدق أثناء السحب */
     #drag-ghost {
       position: fixed;
       pointer-events: none;
       z-index: 9999;
-      transform: translate(-50%, -50%) scale(1.35);
+      transform: translate(-50%, -50%) scale(1.3);
       display: none;
     }
 
-    /* النرد ثلاثي الأبعاد */
-    .dice-scene {
-      width: 74px;
-      height: 74px;
-      perspective: 420px;
-      cursor: pointer;
+    /* أزرار ثلاثية الأبعاد */
+    .btn-pop {
+      transition: transform 0.14s ease, filter 0.14s ease;
+      box-shadow: 0 4px 0 rgba(35, 30, 48, 0.4);
     }
-
-    .dice-cube {
-      width: 100%;
-      height: 100%;
-      position: relative;
-      transform-style: preserve-3d;
-      transition: transform 0.85s cubic-bezier(0.22, 1, 0.36, 1);
-    }
-
-    .dice-face {
-      position: absolute;
-      width: 74px;
-      height: 74px;
-      background: linear-gradient(145deg, #ffffff, #f8fafc);
-      border: 3px solid #94a3b8;
-      border-radius: 18px;
-      box-shadow: inset 0 0 12px rgba(15, 23, 42, 0.08);
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      grid-template-rows: repeat(3, 1fr);
-      padding: 10px;
-      place-items: center;
-    }
-
-    .pip {
-      width: 12px;
-      height: 12px;
-      border-radius: 50%;
-      background: #1e293b;
-      box-shadow: inset 0 1px 2px rgba(255,255,255,0.5);
-    }
-    .pip.red { background: #ef4444; }
-
-    .face-1 { transform: rotateY(0deg) translateZ(37px); }
-    .face-2 { transform: rotateY(90deg) translateZ(37px); }
-    .face-3 { transform: rotateY(180deg) translateZ(37px); }
-    .face-4 { transform: rotateY(-90deg) translateZ(37px); }
-    .face-5 { transform: rotateX(90deg) translateZ(37px); }
-    .face-6 { transform: rotateX(-90deg) translateZ(37px); }
-
-    /* أزرار تفاعلية ثلاثية الأبعاد */
-    .btn-3d {
-      transition: all 0.14s ease;
-      box-shadow: 0 5px 0 rgba(15, 23, 42, 0.22);
-    }
-    .btn-3d:hover:not(:disabled) {
+    .btn-pop:hover:not(:disabled) {
       transform: translateY(-2px);
-      filter: brightness(1.04);
+      filter: brightness(1.05);
     }
-    .btn-3d:active:not(:disabled) {
-      transform: translateY(3px);
-      box-shadow: 0 2px 0 rgba(15, 23, 42, 0.22);
+    .btn-pop:active:not(:disabled) {
+      transform: translateY(2px);
+      box-shadow: 0 1px 0 rgba(35, 30, 48, 0.4);
     }
-    .btn-3d:disabled {
-      opacity: 0.55;
+    .btn-pop:disabled {
+      opacity: 0.5;
       cursor: not-allowed;
     }
 
-    /* قصاصات الاحتفال */
-    @keyframes confettiFall {
+    /* قصاصات الفوز */
+    @keyframes confettiDrop {
       0% { transform: translateY(-10vh) rotate(0deg); opacity: 1; }
-      100% { transform: translateY(105vh) rotate(720deg); opacity: 0.85; }
+      100% { transform: translateY(105vh) rotate(720deg); opacity: 0.9; }
     }
-    .confetti-piece {
+    .confetti-item {
       position: fixed;
       top: -20px;
-      width: 13px;
-      height: 13px;
-      z-index: 100;
-      animation: confettiFall linear forwards;
+      width: 12px;
+      height: 12px;
+      z-index: 120;
+      animation: confettiDrop linear forwards;
     }
   </style>
 </head>
-<body class="flex flex-col min-h-screen">
+<body>
 
-  <!-- المشهد الطبيعي الخلفي المصور (شمس، سحاب، تلال خضراء، نخيل وزهور) -->
-  <div class="fixed inset-0 pointer-events-none overflow-hidden z-0" aria-hidden="true">
-    <!-- الشمس المبتسمة -->
-    <svg class="absolute top-3 left-4 sm:top-5 sm:left-10 w-24 h-24 sm:w-32 sm:h-32 opacity-95" viewBox="0 0 140 140">
-      <g class="sun-rays-spin" stroke="#fde047" stroke-width="6" stroke-linecap="round">
-        <line x1="70" y1="8" x2="70" y2="24" />
-        <line x1="70" y1="116" x2="70" y2="132" />
-        <line x1="8" y1="70" x2="24" y2="70" />
-        <line x1="116" y1="70" x2="132" y2="70" />
-        <line x1="26" y1="26" x2="38" y2="38" />
-        <line x1="102" y1="102" x2="114" y2="114" />
-        <line x1="114" y1="26" x2="102" y2="38" />
-        <line x1="38" y1="102" x2="26" y2="114" />
-      </g>
-      <circle cx="70" cy="70" r="34" fill="#facc15" stroke="#f59e0b" stroke-width="4" />
-      <circle cx="59" cy="64" r="3.5" fill="#78350f" />
-      <circle cx="81" cy="64" r="3.5" fill="#78350f" />
-      <path d="M58 77 Q70 88 82 77" fill="none" stroke="#78350f" stroke-width="3.5" stroke-linecap="round" />
-      <circle cx="52" cy="73" r="4" fill="#fb7185" opacity="0.55" />
-      <circle cx="88" cy="73" r="4" fill="#fb7185" opacity="0.55" />
-    </svg>
+  <!-- شبح البيدق عند السحب -->
+  <div id="drag-ghost" class="board-pawn"></div>
 
-    <!-- سحابة عائمة يمين -->
-    <svg class="cloud-anim-1 absolute top-14 right-6 sm:right-24 w-32 sm:w-44 opacity-90" viewBox="0 0 180 80">
-      <path d="M35 65 H145 A22 22 0 0 0 143 21 A32 32 0 0 0 84 14 A26 26 0 0 0 38 30 A18 18 0 0 0 35 65 Z" fill="#ffffff" />
-    </svg>
+  <!-- الإطار الرئيسي للعبة -->
+  <div class="game-frame">
 
-    <!-- سحابة عائمة وسط -->
-    <svg class="cloud-anim-2 absolute top-24 left-1/3 w-28 sm:w-36 opacity-80 hidden sm:block" viewBox="0 0 180 80">
-      <path d="M35 65 H145 A22 22 0 0 0 143 21 A32 32 0 0 0 84 14 A26 26 0 0 0 38 30 A18 18 0 0 0 35 65 Z" fill="#ffffff" />
-    </svg>
+    <!-- ==================== الشريط العلوي: العنوان + النرد في الميدالية ==================== -->
+    <header class="relative z-20 flex items-center justify-between px-4 sm:px-8 pt-3 pb-1">
+      <!-- أزرار التحكم السريعة (الصوت، القواعد، إعادة) -->
+      <div class="flex items-center gap-2">
+        <button id="btn-sound" onclick="toggleSound()" title="الصوت"
+          class="btn-pop bg-[#5b556b] hover:bg-[#6a637c] text-white px-3 py-2 rounded-2xl text-xs sm:text-sm font-extrabold border-2 border-[#3b3649] flex items-center gap-1.5">
+          <span id="sound-icon">🔊</span>
+          <span class="hidden sm:inline" id="sound-text">الصَّوْتُ</span>
+        </button>
 
-    <!-- تلال خضراء ونخيل في الأسفل -->
-    <svg class="absolute bottom-0 inset-x-0 w-full h-44 sm:h-56" preserveAspectRatio="none" viewBox="0 0 1440 240">
-      <path d="M0,120 Q360,30 720,110 T1440,80 L1440,240 L0,240 Z" fill="#4ade80" />
-      <path d="M0,155 Q480,85 960,150 T1440,125 L1440,240 L0,240 Z" fill="#22c55e" />
-      <!-- نخلة زخرفية يمين -->
-      <g transform="translate(1310, 42)">
-        <path d="M18,120 Q24,70 14,25" stroke="#92400e" stroke-width="10" stroke-linecap="round" fill="none" />
-        <path d="M14,25 Q-20,10 -35,32" stroke="#15803d" stroke-width="7" stroke-linecap="round" fill="none" />
-        <path d="M14,25 Q48,10 62,32" stroke="#15803d" stroke-width="7" stroke-linecap="round" fill="none" />
-        <path d="M14,25 Q-15,-5 -28,8" stroke="#16a34a" stroke-width="7" stroke-linecap="round" fill="none" />
-        <path d="M14,25 Q42,-5 55,8" stroke="#16a34a" stroke-width="7" stroke-linecap="round" fill="none" />
-      </g>
-      <!-- نخلة زخرفية يسار -->
-      <g transform="translate(75, 55)">
-        <path d="M18,110 Q12,65 22,25" stroke="#92400e" stroke-width="10" stroke-linecap="round" fill="none" />
-        <path d="M22,25 Q-12,10 -26,32" stroke="#15803d" stroke-width="7" stroke-linecap="round" fill="none" />
-        <path d="M22,25 Q54,10 68,32" stroke="#15803d" stroke-width="7" stroke-linecap="round" fill="none" />
-        <path d="M22,25 Q-8,-5 -20,8" stroke="#16a34a" stroke-width="7" stroke-linecap="round" fill="none" />
-        <path d="M22,25 Q48,-5 60,8" stroke="#16a34a" stroke-width="7" stroke-linecap="round" fill="none" />
-      </g>
-    </svg>
-  </div>
+        <button onclick="openRulesModal()"
+          class="btn-pop bg-[#5b556b] hover:bg-[#6a637c] text-white px-3 py-2 rounded-2xl text-xs sm:text-sm font-extrabold border-2 border-[#3b3649] flex items-center gap-1.5">
+          <span>📜</span>
+          <span class="hidden sm:inline">القَوَاعِدُ</span>
+        </button>
 
-  <!-- شبح البيدق أثناء السحب -->
-  <div id="drag-ghost" class="pawn-mascot"></div>
-
-  <!-- الشريط العلوي -->
-  <header class="relative z-20 w-full bg-gradient-to-l from-sky-700 via-sky-600 to-cyan-600 text-white shadow-lg px-3 sm:px-6 py-2.5 flex items-center justify-between border-b-4 border-white/80">
-    <div class="flex items-center gap-3">
-      <div class="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-amber-300 text-amber-950 flex items-center justify-center font-script text-3xl sm:text-4xl font-bold shadow-md border-3 border-white">
-        أ
+        <button id="btn-new-game" onclick="openConfirmReset()"
+          class="hidden btn-pop bg-[#e5839a] hover:bg-[#ec94a9] text-[#2e293a] px-3 py-2 rounded-2xl text-xs sm:text-sm font-black border-2 border-[#2e293a] flex items-center gap-1">
+          <span>🔄</span>
+          <span class="hidden md:inline">جَدِيدَةٌ</span>
+        </button>
       </div>
-      <div>
-        <h1 class="text-lg sm:text-2xl font-black leading-tight tracking-wide drop-shadow-sm">
+
+      <!-- العنوان الرئيسي في المنتصف بأسلوب الصورة -->
+      <div class="text-center mx-auto">
+        <h1 class="chalk-title text-2xl sm:text-4xl md:text-5xl font-black tracking-wide leading-none">
           مُغَامَرَةُ الأَلِف
         </h1>
-        <p class="text-[11px] sm:text-xs text-sky-100 font-bold hidden sm:block">
-          لُعْبَةٌ تَعْلِيمِيَّةٌ تَفَاعُلِيَّةٌ لِتَعَلُّمِ حَرْفِ الأَلِف (ا - أ - إ - آ)
+        <p class="text-[11px] sm:text-xs font-extrabold text-[#f8c646] mt-1 tracking-wide">
+          لُعْبَةٌ تَعْلِيمِيَّةٌ لِتَعَلُّمِ حَرْفِ الأَلِف (ا • أ • إ • آ)
         </p>
       </div>
-    </div>
 
-    <div class="flex items-center gap-2">
-      <button id="btn-sound" onclick="toggleSound()" title="تَشْغِيلُ أَوْ كَتْمُ الصَّوْتِ"
-        class="btn-3d bg-amber-400 hover:bg-amber-300 text-amber-950 px-3 sm:px-4 py-2 rounded-2xl text-xs sm:text-sm font-extrabold border-2 border-white flex items-center gap-1.5">
-        <span id="sound-icon" class="text-base">🔊</span>
-        <span id="sound-label">الصَّوْتُ</span>
-      </button>
-
-      <button onclick="openRulesModal()"
-        class="btn-3d bg-emerald-500 hover:bg-emerald-400 text-white px-3 sm:px-4 py-2 rounded-2xl text-xs sm:text-sm font-extrabold border-2 border-white flex items-center gap-1.5">
-        <span>📜</span>
-        <span class="hidden sm:inline">قَوَاعِدُ اللَّعِبِ</span>
-      </button>
-
-      <button id="btn-restart-top" onclick="confirmRestart()"
-        class="hidden btn-3d bg-rose-500 hover:bg-rose-400 text-white px-3 sm:px-4 py-2 rounded-2xl text-xs sm:text-sm font-extrabold border-2 border-white flex items-center gap-1.5">
-        <span>🔄</span>
-        <span>لُعْبَةٌ جَدِيدَةٌ</span>
-      </button>
-    </div>
-  </header>
-
-  <!-- المحتوى الرئيسي -->
-  <main class="relative z-10 flex-1 w-full max-w-7xl mx-auto p-3 sm:p-5 flex flex-col justify-center">
-
-    <!-- ==================== 1. شاشة البداية وإعداد اللاعبين ==================== -->
-    <section id="setup-screen" class="max-w-2xl w-full mx-auto genially-card rounded-3xl p-5 sm:p-8 text-center">
-      <div class="inline-flex items-center justify-center gap-3 bg-amber-100 border-2 border-amber-300 px-5 py-1.5 rounded-full mb-3 shadow-sm">
-        <span class="font-script text-2xl sm:text-3xl text-amber-800 font-bold">ا • أ • إ • آ</span>
-        <span class="text-xs sm:text-sm font-extrabold text-amber-900">حَرْفُ الأَلِف</span>
+      <!-- ميدالية النرد التفاعلي في الزاوية (مثل الصورة تماماً) -->
+      <div class="flex items-center gap-3">
+        <div id="dice-medallion" onclick="handleRollDice()" title="اُنْقُرْ لِرَمْيِ النَّرْدِ"
+          class="dice-medallion w-16 h-14 sm:w-24 sm:h-20 flex items-center justify-center relative">
+          <div id="dice-visual" class="w-11 h-11 sm:w-14 sm:h-14 bg-white rounded-2xl border-2 border-[#2e293a] shadow-inner grid grid-cols-3 grid-rows-3 p-1.5 sm:p-2 place-items-center">
+            <!-- النقاط الافتراضية (6 نقاط مثل الصورة) -->
+            <span class="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-[#353042]"></span>
+            <span></span>
+            <span class="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-[#353042]"></span>
+            <span class="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-[#353042]"></span>
+            <span></span>
+            <span class="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-[#353042]"></span>
+            <span class="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-[#353042]"></span>
+            <span></span>
+            <span class="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-[#353042]"></span>
+          </div>
+          <!-- شارة رقم النرد الناتج -->
+          <span id="dice-badge-num" class="hidden font-num absolute -bottom-2 -left-1 bg-[#f8c646] text-[#2e293a] border-2 border-[#2e293a] text-xs sm:text-sm font-black px-2 py-0.2 rounded-full shadow">
+            6
+          </span>
+        </div>
       </div>
+    </header>
 
-      <h2 class="text-3xl sm:text-4xl font-black text-sky-900 mb-1.5">
-        مُغَامَرَةُ الأَلِف
-      </h2>
-      <p class="text-sm sm:text-base font-bold text-slate-600 mb-6">
-        لُعْبَةٌ تَعْلِيمِيَّةٌ مُمْتِعَةٌ لِتَعَلُّمِ حَرْفِ الأَلِف (ا - أ - إ - آ)
-      </p>
+    <!-- ==================== 1. شاشة اختيار اللاعبين (Overlay أنيقة فوق اللوحة) ==================== -->
+    <section id="setup-overlay" class="relative z-30 flex-1 flex items-center justify-center p-3 sm:p-6">
+      <div class="bg-[#5b556b]/95 backdrop-blur-md border-4 border-[#f8c646] rounded-3xl max-w-xl w-full p-5 sm:p-7 text-center text-white shadow-2xl">
+        <div class="inline-flex items-center gap-2 bg-[#474254] border-2 border-[#f8c646] px-4 py-1 rounded-full text-xs sm:text-sm font-extrabold text-[#f8c646] mb-3">
+          <span>🎲</span>
+          <span>اِخْتَرْ عَدَدَ اللَّاعِبِينَ وَأَسْمَاءَهُمْ</span>
+        </div>
 
-      <!-- اختيار عدد اللاعبين -->
-      <div class="mb-6">
-        <label class="block text-base font-extrabold text-sky-950 mb-3">
-          عَدَدُ اللَّاعِبِينَ :
-        </label>
-        <div class="grid grid-cols-3 gap-3 max-w-md mx-auto">
-          <button type="button" onclick="selectPlayerCount(2)" id="count-btn-2"
-            class="count-btn btn-3d py-3 px-3 rounded-2xl font-extrabold text-base sm:text-lg border-2 bg-sky-500 text-white border-sky-700">
-            ٢ لَاعِبَانِ
+        <h2 class="text-2xl sm:text-3xl font-black text-white mb-4">
+          مَرْحَبًا بِكُمْ فِي مُغَامَرَةِ الأَلِف!
+        </h2>
+
+        <!-- أزرار اختيار 2 أو 3 أو 4 لاعبين -->
+        <div class="grid grid-cols-3 gap-3 max-w-md mx-auto mb-5">
+          <button type="button" onclick="selectPlayerCount(2)" id="btn-count-2"
+            class="btn-pop py-2.5 px-3 rounded-2xl font-black text-sm sm:text-base border-2 bg-[#f8c646] text-[#2e293a] border-[#2e293a]">
+            <span class="font-num">2</span> لَاعِبَانِ
           </button>
-          <button type="button" onclick="selectPlayerCount(3)" id="count-btn-3"
-            class="count-btn btn-3d py-3 px-3 rounded-2xl font-extrabold text-base sm:text-lg border-2 bg-white text-sky-950 border-sky-300">
-            ٣ لَاعِبِينَ
+          <button type="button" onclick="selectPlayerCount(3)" id="btn-count-3"
+            class="btn-pop py-2.5 px-3 rounded-2xl font-black text-sm sm:text-base border-2 bg-[#474254] text-white border-[#353042]">
+            <span class="font-num">3</span> لَاعِبِينَ
           </button>
-          <button type="button" onclick="selectPlayerCount(4)" id="count-btn-4"
-            class="count-btn btn-3d py-3 px-3 rounded-2xl font-extrabold text-base sm:text-lg border-2 bg-white text-sky-950 border-sky-300">
-            ٤ لَاعِبِينَ
+          <button type="button" onclick="selectPlayerCount(4)" id="btn-count-4"
+            class="btn-pop py-2.5 px-3 rounded-2xl font-black text-sm sm:text-base border-2 bg-[#474254] text-white border-[#353042]">
+            <span class="font-num">4</span> لَاعِبِينَ
           </button>
         </div>
-      </div>
 
-      <!-- حقول أسماء اللاعبين -->
-      <div id="players-config-list" class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6 text-right">
-        <!-- يتم التوليد برمجيًا -->
-      </div>
+        <!-- بطاقات أسماء اللاعبين الأربعة -->
+        <div id="setup-players-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-5 text-right">
+          <!-- يتم التوليد برمجياً -->
+        </div>
 
-      <!-- ملخص قواعد اللعب بالعربية -->
-      <div class="bg-sky-50/95 border-2 border-sky-200 rounded-2xl p-4 mb-6 text-right space-y-2 text-xs sm:text-sm font-bold text-slate-700 shadow-inner">
-        <div class="flex items-start gap-2">
-          <span class="text-base">🎲</span>
-          <span>اِرْمِ النَّرْدَ ثُمَّ اسْحَبْ بَيْدَقَكَ إِلَى الخَانَةِ المُضِيئَةِ أَوِ انْقُرْ عَلَيْهَا.</span>
+        <div class="bg-[#474254] rounded-2xl p-3 mb-5 text-xs sm:text-sm text-slate-200 font-bold space-y-1 text-right border border-white/10">
+          <div>🎲 اِرْمِ النَّرْدَ ثُمَّ اسْحَبْ بَيْدَقَكَ إِلَى الخَانَةِ المُضِيئَةِ أَوِ انْقُرْ عَلَيْهَا.</div>
+          <div>🔍 ابْحَثْ عَنِ الأَلِف • 📖 كَلِمَةٌ بِالأَلِف • ❓ صَحِيحٌ أَمْ خَطَأٌ • ⭐ مُكَافَأَةٌ • ↩️ تَرَاجُعٌ</div>
         </div>
-        <div class="flex items-start gap-2">
-          <span class="text-base">🧩</span>
-          <span>🔍 ابْحَثْ عَنْ حَرْفِ الأَلِف • 📖 اخْتَرِ الكَلِمَةَ • ❓ صَحِيحٌ أَمْ خَطَأٌ</span>
-        </div>
-        <div class="flex items-start gap-2">
-          <span class="text-base">🏆</span>
-          <span>⭐ مُكَافَأَةٌ (+٢) • ↩️ تَرَاجُعٌ (-٢) • الإِجَابَةُ الصَّحِيحَةُ تَمْنَحُ نَجْمَةً ⭐</span>
-        </div>
-      </div>
 
-      <button onclick="startGame()"
-        class="btn-3d w-full sm:w-auto px-10 py-4 rounded-2xl bg-gradient-to-b from-emerald-400 to-emerald-600 text-white font-black text-xl sm:text-2xl border-3 border-white shadow-xl flex items-center justify-center gap-3 mx-auto">
-        <span>اِبْدَأِ اللَّعِبَ</span>
-        <span>🚀</span>
-      </button>
+        <button onclick="startGame()"
+          class="btn-pop w-full sm:w-auto px-10 py-3.5 rounded-2xl bg-[#6bc267] hover:bg-[#7ad076] text-[#1e293b] font-black text-lg sm:text-xl border-3 border-[#2e293a] shadow-lg flex items-center justify-center gap-2 mx-auto">
+          <span>اِبْدَأِ المُغَامَرَةَ</span>
+          <span>🚀</span>
+        </button>
+      </div>
     </section>
 
-    <!-- ==================== 2. شاشة لوحة اللعب ==================== -->
-    <section id="game-screen" class="hidden w-full flex flex-col lg:flex-row gap-4 items-stretch">
+    <!-- ==================== 2. مساحة اللعب الرئيسية (اللوحة الجانبية + مسار اللعب الحلزوني) ==================== -->
+    <main id="play-area" class="hidden relative z-10 flex-1 flex flex-col lg:flex-row items-stretch justify-between px-3 sm:px-6 pb-3 pt-1 gap-3">
 
-      <!-- العمود الجانبي: بطاقة الدور والنرد ولوحة النقاط -->
-      <aside class="w-full lg:w-80 xl:w-96 flex flex-col gap-3 shrink-0">
+      <!-- العمود الجانبي: اللوحة الداكنة للبيادق + حالة الدور + النقاط (مطابقة تماماً لليسار في الصورة) -->
+      <aside class="w-full lg:w-56 xl:w-64 flex flex-col justify-between items-center gap-2.5 shrink-0 order-2 lg:order-2">
 
-        <!-- بطاقة الدور الحالي والنرد -->
-        <div class="genially-card rounded-3xl p-4 flex flex-col items-center text-center">
-          <div id="active-player-banner" class="w-full py-2.5 px-3 rounded-2xl border-2 flex items-center justify-center gap-2.5 mb-3 shadow-sm">
-            <div id="active-player-mascot-mini" class="w-8 h-8 flex items-center justify-center shrink-0"></div>
-            <span id="active-player-turn-label" class="text-base sm:text-lg font-black truncate">دَوْرُ اللَّاعِبِ ١ : اِرْمِ النَّرْدَ!</span>
+        <!-- بطاقة توجيه الدور الحالي -->
+        <div id="turn-status-card" class="w-full bg-[#474254] border-2 border-[#f8c646] rounded-2xl p-3 text-center text-white shadow-md">
+          <div class="flex items-center justify-center gap-2 mb-1">
+            <div id="turn-player-avatar" class="w-7 h-7 rounded-full border-2 border-[#2e293a] flex items-center justify-center bg-white shrink-0"></div>
+            <span id="turn-player-name" class="font-black text-sm sm:text-base text-[#f8c646] truncate">دَوْرُ اللَّاعِبِ 1</span>
           </div>
-
-          <!-- منطقة النرد ثلاثي الأبعاد -->
-          <div class="flex items-center justify-center gap-5 my-2">
-            <div class="dice-scene" onclick="handleRollDiceClick()" title="اُنْقُرْ لِرَمْيِ النَّرْدِ">
-              <div id="dice-cube" class="dice-cube">
-                <!-- الوجه 1 -->
-                <div class="dice-face face-1">
-                  <div></div><div></div><div></div>
-                  <div></div><div class="pip red"></div><div></div>
-                  <div></div><div></div><div></div>
-                </div>
-                <!-- الوجه 2 -->
-                <div class="dice-face face-2">
-                  <div class="pip"></div><div></div><div></div>
-                  <div></div><div></div><div></div>
-                  <div></div><div></div><div class="pip"></div>
-                </div>
-                <!-- الوجه 3 -->
-                <div class="dice-face face-3">
-                  <div class="pip"></div><div></div><div></div>
-                  <div></div><div class="pip"></div><div></div>
-                  <div></div><div></div><div class="pip"></div>
-                </div>
-                <!-- الوجه 4 -->
-                <div class="dice-face face-4">
-                  <div class="pip"></div><div></div><div class="pip"></div>
-                  <div></div><div></div><div></div>
-                  <div class="pip"></div><div></div><div class="pip"></div>
-                </div>
-                <!-- الوجه 5 -->
-                <div class="dice-face face-5">
-                  <div class="pip"></div><div></div><div class="pip"></div>
-                  <div></div><div class="pip red"></div><div></div>
-                  <div class="pip"></div><div></div><div class="pip"></div>
-                </div>
-                <!-- الوجه 6 -->
-                <div class="dice-face face-6">
-                  <div class="pip"></div><div></div><div class="pip"></div>
-                  <div class="pip"></div><div></div><div class="pip"></div>
-                  <div class="pip"></div><div></div><div class="pip"></div>
-                </div>
-              </div>
-            </div>
-
-            <div class="flex flex-col items-start gap-2">
-              <button id="btn-roll-dice" onclick="handleRollDiceClick()"
-                class="btn-3d px-5 py-3 rounded-2xl bg-gradient-to-b from-amber-400 to-orange-500 text-white font-black text-base sm:text-lg border-2 border-white flex items-center gap-2">
-                <span>اِرْمِ النَّرْدَ</span>
-                <span>🎲</span>
-              </button>
-              <div id="dice-result-badge" class="text-xs font-extrabold text-sky-950 bg-sky-100 border border-sky-300 px-3 py-1 rounded-full">
-                فِي انْتِظَارِ الرَّمْيِ...
-              </div>
-            </div>
-          </div>
-
-          <!-- التعليمات التفاعلية -->
-          <div id="turn-instruction" class="w-full mt-2 bg-amber-50 border-2 border-amber-300 rounded-2xl p-2.5 text-xs sm:text-sm font-bold text-amber-950">
-            اِضْغَطْ عَلَى <strong>اِرْمِ النَّرْدَ 🎲</strong> لِتَبْدَأَ دَوْرَكَ!
-          </div>
+          <p id="turn-instruction-text" class="text-xs font-bold text-slate-100 leading-snug">
+            اُنْقُرْ عَلَى النَّرْدِ 🎲 فِي الأَعْلَى لِتَبْدَأَ!
+          </p>
+          <button id="btn-roll-sidebar" onclick="handleRollDice()"
+            class="btn-pop mt-2 w-full py-2 px-3 rounded-xl bg-[#f8c646] text-[#2e293a] font-black text-xs sm:text-sm border-2 border-[#2e293a] flex items-center justify-center gap-1.5">
+            <span>اِرْمِ النَّرْدَ</span>
+            <span>🎲</span>
+          </button>
         </div>
 
-        <!-- لوحة اللاعبين والنجوم -->
-        <div class="genially-card rounded-3xl p-4 flex-1">
-          <div class="flex items-center justify-between mb-2.5">
-            <h3 class="text-sm font-black text-sky-950">اللَّاعِبُونَ وَالنُّجُومُ ⭐</h3>
-            <span class="text-xs text-emerald-700 font-extrabold bg-emerald-100 px-2.5 py-0.5 rounded-full">الهَدَفُ : الخَانَةُ ٢٤</span>
+        <!-- الصندوق الرمادي الداكن المستدير للبيادق الأربعة والنجوم (مثل Players في الصورة) -->
+        <div class="w-full flex flex-col items-center">
+          <span class="text-white font-black text-sm sm:text-base mb-1.5 tracking-wide">اللَّاعِبُونَ</span>
+
+          <div id="players-dock-list" class="players-dock w-full p-2.5 sm:p-3 grid grid-cols-2 lg:grid-cols-1 gap-2.5">
+            <!-- يتم إدراج بطاقات اللاعبين الأربعة مع الأيقونات الحيوانية هنا -->
           </div>
-          <div id="scoreboard-list" class="grid grid-cols-2 lg:grid-cols-1 gap-2">
-            <!-- يتم التوليد برمجيًا -->
-          </div>
+
+          <p class="text-center text-white/95 font-extrabold text-xs sm:text-sm mt-2 leading-tight">
+            اِسْحَبْ قِطَعَ اللَّعِبِ<br>
+            <span class="text-[11px] text-[#f8c646] font-bold">أَوِ انْقُرْ عَلَى الخَانَةِ المُضِيئَةِ</span>
+          </p>
         </div>
 
       </aside>
 
-      <!-- العمود الرئيسي: مسار اللعب الحلزوني المكون من ٢٤ خانة -->
-      <div class="flex-1 board-meadow rounded-3xl p-3 sm:p-5 flex flex-col justify-between relative">
-        <div class="flex items-center justify-between mb-2.5 px-1">
-          <span class="text-xs sm:text-sm font-black text-emerald-950 flex items-center gap-1.5">
-            <span>🗺️ مَسَارُ المُغَامَرَةِ (٢٤ خَانَةً)</span>
-          </span>
-          <span class="text-xs sm:text-sm font-extrabold text-emerald-800 bg-white/80 px-3 py-1 rounded-full border border-emerald-300">
-            مِنَ البِدَايَةِ 🚩 إِلَى النِّهَايَةِ 🏁
-          </span>
-        </div>
+      <!-- اللوحة المركزية: المسار الحلزوني المرسوم بـ SVG مع جميع الرسومات التوضيحية المطابقة للصورة -->
+      <div class="flex-1 relative flex items-center justify-center min-h-[410px] sm:min-h-[490px] lg:min-h-[540px] order-1 lg:order-1">
+        <div id="svg-board-container" class="relative w-full h-full max-w-[1060px] flex items-center justify-center">
+          <!-- الرسم المتجهي الكامل للمسار الـ 24 والرسومات الكرتونية -->
+          <svg id="game-board-svg" viewBox="0 0 1000 620" class="w-full h-full max-h-[78vh] overflow-visible select-none">
+            <defs>
+              <filter id="softShadow" x="-10%" y="-10%" width="120%" height="120%">
+                <feDropShadow dx="0" dy="3" stdDeviation="3" flood-color="#2a2536" flood-opacity="0.35"/>
+              </filter>
+            </defs>
 
-        <!-- حاوية المسار المرسوم + شبكة الخانات -->
-        <div id="board-wrapper" class="relative w-full my-auto">
-          <svg id="board-path-svg" class="absolute inset-0 w-full h-full pointer-events-none z-0"></svg>
+            <!-- ==================== 1. الرسومات الكرتونية الزخرفية المطابقة تماماً للصورة ==================== -->
+            <g id="decorative-illustrations" pointer-events="none">
+              <!-- سهم البداية الأصفر (START) -->
+              <g transform="translate(88, 72)">
+                <path d="M0,10 L24,10 L24,2 L40,16 L24,30 L24,22 L0,22 Z" fill="#f6c253" stroke="#353042" stroke-width="2.5" stroke-linejoin="round"/>
+                <text x="54" y="42" fill="#353042" font-family="Cairo, sans-serif" font-weight="900" font-size="14" transform="rotate(-90 54 42)">البِدَايَة</text>
+              </g>
 
-          <!-- شبكة متجاوبة: 4 أعمدة على الهاتف و6 أعمدة على الشاشات المتوسطة والكبيرة -->
-          <div id="board-grid" class="relative z-10 grid grid-cols-4 sm:grid-cols-6 gap-2 sm:gap-3">
-            <!-- يتم إدراج الخانات الـ 24 هنا -->
-          </div>
-        </div>
+              <!-- الوحش الأزرق ذو القرون الصفراء يسار المسار + خطوط دهشة + برق أصفر -->
+              <g transform="translate(36, 135)">
+                <!-- خطوط الدهشة البيضاء -->
+                <path d="M12,15 L4,6 M22,10 L20,0 M32,14 L40,5" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round"/>
+                <!-- جسم الوحش الأزرق -->
+                <path d="M22,78 C12,55 18,28 42,24 C66,20 78,44 74,74 C70,96 58,108 44,106 C30,104 26,92 22,78 Z" fill="#4696d8" stroke="#2e293a" stroke-width="2.5"/>
+                <!-- القرون الصفراء -->
+                <path d="M26,28 L16,12 L34,23 Z" fill="#f6c253" stroke="#2e293a" stroke-width="2"/>
+                <path d="M56,25 L66,10 L48,22 Z" fill="#f6c253" stroke="#2e293a" stroke-width="2"/>
+                <!-- العيون والفم -->
+                <circle cx="36" cy="45" r="7" fill="#ffffff" stroke="#2e293a" stroke-width="2"/>
+                <circle cx="37" cy="45" r="3" fill="#2e293a"/>
+                <circle cx="54" cy="44" r="6" fill="#ffffff" stroke="#2e293a" stroke-width="2"/>
+                <circle cx="53" cy="44" r="2.8" fill="#2e293a"/>
+                <path d="M35,62 Q46,72 57,60" fill="none" stroke="#2e293a" stroke-width="2.5" stroke-linecap="round"/>
+                <polygon points="39,63 42,69 45,64" fill="#ffffff"/>
+                <polygon points="48,64 51,69 54,62" fill="#ffffff"/>
+                <!-- البرق الأصفر أسفل الوحش -->
+                <polygon points="24,126 42,126 32,146 48,146 22,182 30,154 16,154" fill="#f6c253" stroke="#2e293a" stroke-width="2" stroke-linejoin="round"/>
+                <!-- الخفاش البنفسجي الصغير -->
+                <g transform="translate(14, 248)">
+                  <path d="M22,14 Q10,2 0,14 Q8,18 14,16 Q18,22 22,22 Q26,22 30,16 Q36,18 44,14 Q34,2 22,14 Z" fill="#6b5b95" stroke="#2e293a" stroke-width="2"/>
+                  <circle cx="19" cy="14" r="2" fill="#f6c253"/>
+                  <circle cx="25" cy="14" r="2" fill="#f6c253"/>
+                </g>
+              </g>
 
-        <!-- تلميح أسفل اللوحة -->
-        <div class="mt-3 pt-2 border-t border-emerald-400/50 flex flex-wrap items-center justify-between gap-2 text-[11px] sm:text-xs font-bold text-emerald-950">
-          <span>💡 اِسْحَبْ بَيْدَقَكَ إِلَى الخَانَةِ المُضِيئَةِ أَوِ انْقُرْ عَلَيْهَا مُبَاشَرَةً!</span>
-          <span>⭐ إِجَابَةٌ صَحِيحَةٌ = نَجْمَةٌ • ↩️ إِجَابَةٌ خَاطِئَةٌ = تَرَاجُعٌ خَانَتَيْنِ</span>
+              <!-- السلحفاة الخضراء داخل المنعطف الأيسر -->
+              <g transform="translate(190, 198)">
+                <ellipse cx="32" cy="34" rx="22" ry="17" fill="#6bc267" stroke="#2e293a" stroke-width="2.3"/>
+                <path d="M20,30 L32,22 L44,30 L40,42 L24,42 Z" fill="none" stroke="#3c8d38" stroke-width="2"/>
+                <circle cx="56" cy="24" r="8" fill="#f6c253" stroke="#2e293a" stroke-width="2"/>
+                <circle cx="58" cy="22" r="1.8" fill="#2e293a"/>
+                <ellipse cx="18" cy="48" rx="6" ry="4" fill="#f6c253" stroke="#2e293a" stroke-width="1.8"/>
+                <ellipse cx="44" cy="48" rx="6" ry="4" fill="#f6c253" stroke="#2e293a" stroke-width="1.8"/>
+              </g>
+
+              <!-- الفراشة الوردية والصفراء -->
+              <g transform="translate(325, 138)">
+                <ellipse cx="16" cy="18" rx="14" ry="10" transform="rotate(-25 16 18)" fill="#e5839a" stroke="#2e293a" stroke-width="2"/>
+                <ellipse cx="42" cy="18" rx="14" ry="10" transform="rotate(25 42 18)" fill="#e5839a" stroke="#2e293a" stroke-width="2"/>
+                <ellipse cx="18" cy="34" rx="11" ry="8" transform="rotate(20 18 34)" fill="#f6c253" stroke="#2e293a" stroke-width="2"/>
+                <ellipse cx="40" cy="34" rx="11" ry="8" transform="rotate(-20 40 34)" fill="#f6c253" stroke="#2e293a" stroke-width="2"/>
+                <rect x="27" y="10" width="4" height="32" rx="2" fill="#474254"/>
+              </g>
+
+              <!-- الحلزون الأخضر الصغير في الأعلى -->
+              <g transform="translate(425, 128)">
+                <path d="M4,24 Q20,26 38,22 Q44,18 42,14" fill="none" stroke="#a3d977" stroke-width="6" stroke-linecap="round"/>
+                <circle cx="20" cy="16" r="11" fill="#f6c253" stroke="#2e293a" stroke-width="2"/>
+                <path d="M20,16 m-5,0 a5,5 0 1,0 10,0 a3,3 0 1,0 -6,0" fill="none" stroke="#2e293a" stroke-width="1.8"/>
+              </g>
+
+              <!-- الشمس الصفراء المبتسمة في أعلى اليمين مع السحابة -->
+              <g transform="translate(885, 85)">
+                <g stroke="#f6c253" stroke-width="4" stroke-linecap="round">
+                  <line x1="45" y1="2" x2="45" y2="14"/>
+                  <line x1="45" y1="76" x2="45" y2="88"/>
+                  <line x1="2" y1="45" x2="14" y2="45"/>
+                  <line x1="76" y1="45" x2="88" y2="45"/>
+                  <line x1="15" y1="15" x2="24" y2="24"/>
+                  <line x1="66" y1="66" x2="75" y2="75"/>
+                  <line x1="75" y1="15" x2="66" y2="24"/>
+                  <line x1="24" y1="66" x2="15" y2="75"/>
+                </g>
+                <circle cx="45" cy="45" r="26" fill="#f6c253" stroke="#2e293a" stroke-width="2.5"/>
+                <path d="M34,40 Q38,36 42,40" fill="none" stroke="#2e293a" stroke-width="2.2" stroke-linecap="round"/>
+                <path d="M48,40 Q52,36 56,40" fill="none" stroke="#2e293a" stroke-width="2.2" stroke-linecap="round"/>
+                <path d="M36,50 Q45,59 54,50" fill="none" stroke="#2e293a" stroke-width="2.2" stroke-linecap="round"/>
+                <!-- سحابة بيضاء أسفل الشمس -->
+                <path d="M20,82 H78 A12,12 0 0,0 76,58 A18,18 0 0,0 44,54 A14,14 0 0,0 20,82 Z" fill="#ffffff"/>
+              </g>
+
+              <!-- الخروف الأبيض الراقص مع النوتات الموسيقية على اليمين -->
+              <g transform="translate(885, 290)">
+                <text x="45" y="10" fill="#ffffff" font-size="16" font-weight="bold">♪ ♫</text>
+                <circle cx="38" cy="36" r="18" fill="#ffffff" stroke="#2e293a" stroke-width="2"/>
+                <circle cx="24" cy="32" r="11" fill="#ffffff" stroke="#2e293a" stroke-width="2"/>
+                <circle cx="52" cy="34" r="11" fill="#ffffff" stroke="#2e293a" stroke-width="2"/>
+                <circle cx="20" cy="34" r="9" fill="#5ea8e6" stroke="#2e293a" stroke-width="2"/>
+                <circle cx="17" cy="32" r="1.8" fill="#2e293a"/>
+                <line x1="30" y1="52" x2="26" y2="66" stroke="#2e293a" stroke-width="3" stroke-linecap="round"/>
+                <line x1="46" y1="52" x2="50" y2="66" stroke="#2e293a" stroke-width="3" stroke-linecap="round"/>
+              </g>
+
+              <!-- القمر الأصفر النائم مع النجوم في قلب الحلزون -->
+              <g transform="translate(420, 275)">
+                <path d="M36,8 A30,30 0 1,0 56,56 A23,23 0 1,1 36,8 Z" fill="#f6c253" stroke="#2e293a" stroke-width="2.3"/>
+                <path d="M22,34 Q26,38 30,34" fill="none" stroke="#2e293a" stroke-width="2" stroke-linecap="round"/>
+                <circle cx="52" cy="14" r="3" fill="#f6c253"/>
+                <circle cx="62" cy="32" r="2.5" fill="#f6c253"/>
+                <circle cx="48" cy="64" r="3" fill="#f6c253"/>
+              </g>
+
+              <!-- العصفور الأصفر وعش الفراخ على الغصن -->
+              <g transform="translate(530, 265)">
+                <path d="M0,46 Q55,40 110,48" stroke="#a47551" stroke-width="5" stroke-linecap="round" fill="none"/>
+                <!-- العش -->
+                <path d="M12,44 Q30,60 48,44 Z" fill="#c68b59" stroke="#2e293a" stroke-width="2"/>
+                <circle cx="22" cy="38" r="5" fill="#f6c253"/>
+                <circle cx="30" cy="36" r="5" fill="#f6c253"/>
+                <circle cx="38" cy="38" r="5" fill="#f6c253"/>
+                <!-- العصفور الأم -->
+                <circle cx="76" cy="34" r="13" fill="#f6c253" stroke="#2e293a" stroke-width="2"/>
+                <polygon points="62,33 54,36 62,39" fill="#e5839a" stroke="#2e293a" stroke-width="1.5"/>
+                <circle cx="72" cy="31" r="2" fill="#2e293a"/>
+              </g>
+
+              <!-- الفتاة ذات الضفائر الزرقاء وعلامة الاستفهام -->
+              <g transform="translate(715, 195)">
+                <circle cx="10" cy="24" r="8" fill="#5ea8e6" stroke="#2e293a" stroke-width="2"/>
+                <circle cx="46" cy="24" r="8" fill="#5ea8e6" stroke="#2e293a" stroke-width="2"/>
+                <circle cx="28" cy="28" r="15" fill="#fcd5b5" stroke="#2e293a" stroke-width="2"/>
+                <path d="M13,24 Q28,10 43,24" fill="#5ea8e6" stroke="#2e293a" stroke-width="2"/>
+                <circle cx="23" cy="28" r="2" fill="#2e293a"/>
+                <circle cx="33" cy="28" r="2" fill="#2e293a"/>
+                <path d="M24,35 Q28,39 32,35" fill="none" stroke="#2e293a" stroke-width="2" stroke-linecap="round"/>
+                <text x="56" y="34" fill="#ffffff" font-family="Fredoka, sans-serif" font-weight="900" font-size="26">؟</text>
+              </g>
+
+              <!-- الولد المبتسم ذو القميص الأزرق في الأسفل يسار -->
+              <g transform="translate(275, 365)">
+                <path d="M14,66 C14,50 44,50 44,66 Z" fill="#5ea8e6" stroke="#2e293a" stroke-width="2.2"/>
+                <circle cx="29" cy="34" r="16" fill="#fcd5b5" stroke="#2e293a" stroke-width="2.2"/>
+                <path d="M14,28 Q22,10 34,16 Q42,10 44,26" fill="#f6c253" stroke="#2e293a" stroke-width="2"/>
+                <path d="M21,33 Q24,30 27,33" fill="none" stroke="#2e293a" stroke-width="2" stroke-linecap="round"/>
+                <path d="M31,33 Q34,30 37,33" fill="none" stroke="#2e293a" stroke-width="2" stroke-linecap="round"/>
+                <path d="M23,40 Q29,46 35,40" fill="none" stroke="#2e293a" stroke-width="2" stroke-linecap="round"/>
+              </g>
+
+              <!-- الدعسوقة الزرقاء والوردية -->
+              <g transform="translate(415, 420)">
+                <ellipse cx="22" cy="22" rx="16" ry="12" fill="#e5839a" stroke="#2e293a" stroke-width="2"/>
+                <circle cx="8" cy="22" r="7" fill="#5ea8e6" stroke="#2e293a" stroke-width="2"/>
+                <circle cx="18" cy="18" r="2.2" fill="#2e293a"/>
+                <circle cx="28" cy="20" r="2.2" fill="#2e293a"/>
+                <circle cx="22" cy="26" r="2.2" fill="#2e293a"/>
+              </g>
+
+              <!-- الثعبان الأخضر الطويل في الأسفل يمين -->
+              <g transform="translate(650, 425)">
+                <path d="M10,26 Q45,14 80,26 T150,24 Q175,20 185,10" fill="none" stroke="#6bc267" stroke-width="11" stroke-linecap="round"/>
+                <circle cx="12" cy="25" r="8" fill="#6bc267" stroke="#2e293a" stroke-width="2"/>
+                <circle cx="10" cy="23" r="1.8" fill="#2e293a"/>
+                <path d="M4,26 L-4,23 M4,26 L-4,29" stroke="#e5839a" stroke-width="2" stroke-linecap="round"/>
+              </g>
+
+              <!-- السحب البيضاء وقوس قزح في أسفل اليسار قرب النهاية (END) -->
+              <g transform="translate(20, 505)">
+                <!-- قوس قزح -->
+                <path d="M115,65 A58,58 0 0,1 230,65" fill="none" stroke="#e5839a" stroke-width="8"/>
+                <path d="M123,65 A50,50 0 0,1 222,65" fill="none" stroke="#f6c253" stroke-width="8"/>
+                <path d="M131,65 A42,42 0 0,1 214,65" fill="none" stroke="#6bc267" stroke-width="8"/>
+                <path d="M139,65 A34,34 0 0,1 206,65" fill="none" stroke="#5ea8e6" stroke-width="8"/>
+                <!-- سحابة يسرى -->
+                <path d="M10,75 H155 A18,18 0 0,0 150,40 A26,26 0 0,0 100,32 A22,22 0 0,0 56,42 A16,16 0 0,0 10,75 Z" fill="#ffffff"/>
+                <!-- سحابة يمنى -->
+                <path d="M185,75 H360 A18,18 0 0,0 355,40 A28,28 0 0,0 298,30 A22,22 0 0,0 245,44 A16,16 0 0,0 185,75 Z" fill="#ffffff"/>
+              </g>
+
+              <!-- كلمة النهاية (END) قرب الخانة 24 -->
+              <text x="128" y="472" fill="#353042" font-family="Cairo, sans-serif" font-weight="900" font-size="16">النِّهَايَة 🏁</text>
+            </g>
+
+            <!-- ==================== 2. حاوية الخانات الـ 24 المرسومة برمجياً ==================== -->
+            <g id="board-tiles-layer" filter="url(#softShadow)"></g>
+
+            <!-- ==================== 3. حاوية البيادق فوق الخانات ==================== -->
+            <g id="board-pawns-layer"></g>
+          </svg>
         </div>
       </div>
 
-    </section>
-  </main>
+    </main>
+  </div>
 
-  <!-- ==================== نافذة الألعاب المصغرة والأحداث ==================== -->
-  <div id="event-modal" class="fixed inset-0 bg-slate-900/65 backdrop-blur-sm z-50 hidden items-center justify-center p-3 sm:p-5">
-    <div class="bg-white border-4 border-sky-400 rounded-3xl max-w-lg w-full p-5 sm:p-7 shadow-2xl transform transition-all relative">
-      <!-- رأس النافذة -->
-      <div class="flex items-center justify-between border-b-2 border-slate-100 pb-3 mb-4">
+  <!-- ==================== نافذة الألعاب المصغرة (بحث / كلمة / صح أو خطأ / مكافأة / تراجع) ==================== -->
+  <div id="challenge-modal" class="fixed inset-0 bg-[#231e30]/75 backdrop-blur-sm z-50 hidden items-center justify-center p-3 sm:p-5">
+    <div class="bg-[#5b556b] border-4 border-[#f8c646] rounded-3xl max-w-lg w-full p-5 sm:p-6 text-white shadow-2xl relative">
+      <!-- رأس البطاقة -->
+      <div class="flex items-center justify-between border-b-2 border-white/15 pb-3 mb-4">
         <div class="flex items-center gap-2.5">
-          <span id="modal-icon" class="text-3xl">🔍</span>
+          <span id="modal-emoji" class="text-3xl">🔍</span>
           <div>
-            <h3 id="modal-title" class="text-lg sm:text-xl font-black text-sky-950">تَحَدِّي حَرْفِ الأَلِف</h3>
-            <p id="modal-subtitle" class="text-xs text-slate-600 font-bold">أَجِبْ بِشَكْلٍ صَحِيحٍ لِتَحْصُلَ عَلَى نَجْمَةٍ ⭐</p>
+            <h3 id="modal-title" class="text-lg sm:text-xl font-black text-[#f8c646]">تَحَدِّي حَرْفِ الأَلِف</h3>
+            <p id="modal-subtitle" class="text-xs text-slate-200 font-bold">أَجِبْ بِشَكْلٍ صَحِيحٍ لِتَحْصُلَ عَلَى نَجْمَةٍ ⭐</p>
           </div>
         </div>
-        <span id="modal-player-tag" class="px-3 py-1 rounded-full text-xs font-extrabold text-white shadow shrink-0">اللَّاعِبُ ١</span>
+        <span id="modal-player-badge" class="px-3 py-1 rounded-full text-xs font-black text-[#2e293a] border-2 border-[#2e293a] shrink-0">
+          اللَّاعِبُ 1
+        </span>
       </div>
 
-      <!-- محتوى التحدي -->
-      <div id="modal-body" class="my-2">
-        <!-- يتم التوليد برمجيًا -->
-      </div>
+      <!-- جسم التحدي -->
+      <div id="modal-content-area" class="my-2"></div>
 
-      <!-- نتيجة الإجابة -->
-      <div id="modal-feedback" class="hidden mt-4 p-4 rounded-2xl border-2 text-center">
-        <div id="feedback-emoji" class="text-4xl mb-1">🌟</div>
-        <div id="feedback-title" class="text-base sm:text-lg font-black mb-1">أَحْسَنْتَ!</div>
-        <div id="feedback-desc" class="text-xs sm:text-sm font-bold mb-3">حَصَلْتَ عَلَى نَجْمَةٍ ⭐</div>
-        <button id="btn-modal-continue" onclick="closeEventModalAndContinue()"
-          class="btn-3d px-7 py-2.5 rounded-2xl bg-sky-600 hover:bg-sky-500 text-white font-black text-base border-2 border-white">
+      <!-- صندوق التغذية الراجعة والنتيجة -->
+      <div id="modal-result-box" class="hidden mt-4 p-4 rounded-2xl border-2 text-center">
+        <div id="result-icon" class="text-4xl mb-1">🌟</div>
+        <div id="result-heading" class="text-base sm:text-lg font-black mb-1">أَحْسَنْتَ!</div>
+        <div id="result-details" class="text-xs sm:text-sm font-bold mb-3">حَصَلْتَ عَلَى نَجْمَةٍ ⭐</div>
+        <button onclick="closeChallengeModal()"
+          class="btn-pop px-7 py-2.5 rounded-2xl bg-[#f8c646] text-[#2e293a] font-black text-base border-2 border-[#2e293a]">
           مُتَابَعَةٌ ⬅️
         </button>
       </div>
@@ -565,945 +629,953 @@
   </div>
 
   <!-- ==================== نافذة الفوز النهائية ==================== -->
-  <div id="victory-modal" class="fixed inset-0 bg-slate-900/75 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
-    <div class="bg-gradient-to-b from-amber-50 via-white to-amber-100 border-4 border-amber-400 rounded-3xl max-w-lg w-full p-6 sm:p-8 text-center shadow-2xl relative">
+  <div id="victory-modal" class="fixed inset-0 bg-[#231e30]/80 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+    <div class="bg-[#5b556b] border-4 border-[#f8c646] rounded-3xl max-w-lg w-full p-6 sm:p-8 text-center text-white shadow-2xl">
       <div class="text-6xl mb-2 animate-bounce">🏆</div>
-      <h2 class="text-2xl sm:text-3xl font-black text-amber-600 mb-2">
-        🏆 مَبْرُوكٌ الفَوْزُ! 🏆
+      <h2 class="text-2xl sm:text-3xl font-black text-[#f8c646] mb-2">
+        مَبْرُوكٌ الفَوْزُ!
       </h2>
-      <p id="winner-subtitle" class="text-base sm:text-lg font-extrabold text-slate-800 mb-5">
-        لَقَدْ وَصَلَ اللَّاعِبُ ١ إِلَى النِّهَايَةِ أَوَّلًا وَفَازَ بِاللُّعْبَةِ!
+      <p id="victory-winner-text" class="text-base sm:text-lg font-extrabold text-white mb-5">
+        وَصَلَ اللَّاعِبُ 1 إِلَى النِّهَايَةِ أَوَّلًا!
       </p>
 
-      <!-- الترتيب النهائي -->
-      <div id="final-standings" class="bg-white/95 border-2 border-amber-300 rounded-2xl p-4 mb-6 space-y-2 text-right">
-        <!-- يتم التوليد برمجيًا -->
-      </div>
+      <div id="victory-standings" class="bg-[#474254] border-2 border-white/15 rounded-2xl p-4 mb-6 space-y-2 text-right"></div>
 
-      <button onclick="resetToSetup()"
-        class="btn-3d w-full py-3.5 rounded-2xl bg-gradient-to-b from-emerald-400 to-emerald-600 text-white font-black text-lg sm:text-xl border-2 border-white">
+      <button onclick="resetGameToSetup()"
+        class="btn-pop w-full py-3.5 rounded-2xl bg-[#6bc267] text-[#2e293a] font-black text-lg sm:text-xl border-3 border-[#2e293a]">
         اِلْعَبْ مَرَّةً أُخْرَى 🔄
       </button>
     </div>
   </div>
 
   <!-- ==================== نافذة قواعد اللعب ==================== -->
-  <div id="rules-modal" class="fixed inset-0 bg-slate-900/65 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
-    <div class="bg-white border-4 border-emerald-400 rounded-3xl max-w-lg w-full p-5 sm:p-6 shadow-2xl max-h-[90vh] overflow-y-auto text-right">
-      <div class="flex items-center justify-between border-b-2 border-slate-100 pb-3 mb-4">
-        <h3 class="text-xl font-black text-emerald-900 flex items-center gap-2">
-          <span>📜</span> قَوَاعِدُ اللُّعْبَةِ
+  <div id="rules-modal" class="fixed inset-0 bg-[#231e30]/75 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+    <div class="bg-[#5b556b] border-4 border-[#f8c646] rounded-3xl max-w-lg w-full p-5 sm:p-6 text-white shadow-2xl text-right">
+      <div class="flex items-center justify-between border-b-2 border-white/15 pb-3 mb-4">
+        <h3 class="text-xl font-black text-[#f8c646] flex items-center gap-2">
+          <span>📜</span> قَوَاعِدُ مُغَامَرَةِ الأَلِف
         </h3>
-        <button onclick="closeRulesModal()" class="w-8 h-8 rounded-full bg-slate-200 hover:bg-slate-300 font-black text-slate-700">✖</button>
+        <button onclick="closeRulesModal()" class="w-8 h-8 rounded-full bg-[#474254] hover:bg-rose-500 font-black text-white">✖</button>
       </div>
-      <div class="space-y-3 text-sm font-bold text-slate-700 leading-relaxed">
-        <p>🎯 <strong>هَدَفُ اللُّعْبَةِ :</strong> أَنْ تَكُونَ أَوَّلَ لَاعِبٍ يَصِلُ إِلَى الخَانَةِ ٢٤ (<strong>🏁 النِّهَايَة</strong>) مَعَ جَمْعِ أَكْبَرِ عَدَدٍ مِنَ النُّجُومِ ⭐.</p>
-        <p>🎲 <strong>طَرِيقَةُ اللَّعِبِ :</strong></p>
-        <ul class="list-disc pr-5 space-y-1">
-          <li>اِضْغَطْ عَلَى زِرِّ <strong>اِرْمِ النَّرْدَ 🎲</strong>.</li>
-          <li>سَتُضِيءُ الخَانَةُ الَّتِي يَجِبُ أَنْ تَنْتَقِلَ إِلَيْهَا.</li>
-          <li>اِسْحَبْ بَيْدَقَكَ إِلَى الخَانَةِ المُضِيئَةِ أَوِ انْقُرْ عَلَيْهَا مُبَاشَرَةً.</li>
-        </ul>
-        <p>🧩 <strong>أَنْوَاعُ الخَانَاتِ :</strong></p>
-        <ul class="space-y-1.5 bg-sky-50 p-3.5 rounded-2xl border border-sky-200">
-          <li>🔍 <strong>ابْحَثْ :</strong> اِنْقُرْ عَلَى جَمِيعِ أَشْكَالِ حَرْفِ الأَلِف (ا ، أ ، إ ، آ) بَيْنَ ٦ حُرُوفٍ.</li>
-          <li>📖 <strong>كَلِمَة :</strong> اِخْتَرِ الكَلِمَةَ الَّتِي تَبْدَأُ بِحَرْفِ الأَلِف.</li>
-          <li>❓ <strong>صَحْ / خَطَأ :</strong> حَدِّدْ إِنْ كَانَ الحَرْفُ المَعْرُوضُ هُوَ حَرْفُ الأَلِف أَمْ لَا.</li>
-          <li>⭐ <strong>مُكَافَأَة +٢ :</strong> تَقَدَّمْ خَانَتَيْنِ إِلَى الأَمَامِ.</li>
-          <li>↩️ <strong>تَرَاجُع -٢ :</strong> تَرَاجَعْ خَانَتَيْنِ إِلَى الخَلْفِ.</li>
-        </ul>
-        <p>🏆 <strong>النُّجُومُ وَالجَزَاءُ :</strong> الإِجَابَةُ الصَّحِيحَةُ تَمْنَحُ <strong>نَجْمَةً ⭐</strong>، وَالإِجَابَةُ الخَاطِئَةُ تُرْجِعُكَ <strong>خَانَتَيْنِ ↩️</strong>.</p>
+      <div class="space-y-3 text-sm font-bold text-slate-100 leading-relaxed">
+        <p>🎯 <strong>الهَدَفُ :</strong> أَنْ تَكُونَ أَوَّلَ مَنْ يَصِلُ إِلَى الخَانَةِ <span class="font-num text-[#f8c646]">24</span> (🏁 النِّهَايَة).</p>
+        <p>🎲 <strong>اللَّعِبُ :</strong> اُنْقُرْ عَلَى النَّرْدِ فِي الزَّاوِيَةِ، ثُمَّ اسْحَبْ بَيْدَقَكَ إِلَى الخَانَةِ المُضِيئَةِ أَوِ انْقُرْ عَلَيْهَا مُبَاشَرَةً.</p>
+        <div class="bg-[#474254] p-3.5 rounded-2xl space-y-1.5 border border-white/10">
+          <div>🔍 <strong>ابْحَثْ :</strong> اُنْقُرْ عَلَى جَمِيعِ أَشْكَالِ الأَلِف (ا ، أ ، إ ، آ) بَيْنَ <span class="font-num">6</span> حُرُوفٍ.</div>
+          <div>📖 <strong>كَلِمَةٌ :</strong> اِخْتَرِ الكَلِمَةَ الَّتِي تَبْدَأُ بِحَرْفِ الأَلِف.</div>
+          <div>❓ <strong>صَحِيحٌ أَمْ خَطَأٌ :</strong> حَدِّدْ إِنْ كَانَ الحَرْفُ المَعْرُوضُ أَلِفًا أَمْ لَا.</div>
+          <div>⭐ <strong>مُكَافَأَةٌ :</strong> تَقَدَّمْ خَانَتَيْنِ (+<span class="font-num">2</span>).</div>
+          <div>↩️ <strong>تَرَاجُعٌ :</strong> تَرَاجَعْ خَانَتَيْنِ (-<span class="font-num">2</span>).</div>
+        </div>
+        <p>⭐ <strong>النِّقَاطُ :</strong> الإِجَابَةُ الصَّحِيحَةُ تَمْنَحُ نَجْمَةً ⭐، وَالإِجَابَةُ الخَاطِئَةُ تُرْجِعُكَ خَانَتَيْنِ ↩️.</p>
       </div>
       <button onclick="closeRulesModal()"
-        class="btn-3d mt-5 w-full py-3 rounded-2xl bg-emerald-500 hover:bg-emerald-600 text-white font-black text-base border-2 border-white">
-        فَهِمْتُ، لِنَبْدَأْ! 👍
+        class="btn-pop mt-5 w-full py-3 rounded-2xl bg-[#f8c646] text-[#2e293a] font-black text-base border-2 border-[#2e293a]">
+        فَهِمْتُ! 👍
       </button>
     </div>
   </div>
 
   <!-- ==================== نافذة تأكيد إعادة اللعب ==================== -->
-  <div id="confirm-modal" class="fixed inset-0 bg-slate-900/65 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
-    <div class="bg-white border-4 border-rose-400 rounded-3xl max-w-sm w-full p-6 text-center shadow-2xl">
+  <div id="confirm-reset-modal" class="fixed inset-0 bg-[#231e30]/75 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+    <div class="bg-[#5b556b] border-4 border-[#e5839a] rounded-3xl max-w-sm w-full p-6 text-center text-white shadow-2xl">
       <div class="text-4xl mb-2">🔄</div>
-      <h3 class="text-xl font-black text-slate-900 mb-2">هَلْ تُرِيدُ بَدْءَ لُعْبَةٍ جَدِيدَةٍ؟</h3>
-      <p class="text-sm font-bold text-slate-600 mb-5">سَتَعُودُ إِلَى شَاشَةِ اخْتِيَارِ اللَّاعِبِينَ وَسَيُفْقَدُ التَّقَدُّمُ الحَالِيُّ.</p>
+      <h3 class="text-xl font-black text-white mb-2">بَدْءُ لُعْبَةٍ جَدِيدَةٍ؟</h3>
+      <p class="text-sm font-bold text-slate-200 mb-5">سَتَعُودُ إِلَى شَاشَةِ اخْتِيَارِ اللَّاعِبِينَ.</p>
       <div class="flex gap-3">
-        <button onclick="closeConfirmModal()" class="btn-3d flex-1 py-2.5 rounded-2xl bg-slate-200 text-slate-800 font-black">إِلْغَاءٌ</button>
-        <button onclick="resetToSetup()" class="btn-3d flex-1 py-2.5 rounded-2xl bg-rose-500 text-white font-black border border-rose-700">نَعَمْ، اِبْدَأْ مِنْ جَدِيدٍ</button>
+        <button onclick="closeConfirmReset()" class="btn-pop flex-1 py-2.5 rounded-2xl bg-[#474254] text-white font-black border border-white/20">إِلْغَاءٌ</button>
+        <button onclick="resetGameToSetup()" class="btn-pop flex-1 py-2.5 rounded-2xl bg-[#e5839a] text-[#2e293a] font-black border-2 border-[#2e293a]">نَعَمْ</button>
       </div>
     </div>
   </div>
 
   <script>
     /* =========================================================================
-       1. الدوال المساعدة للأرقام العربية والبيانات التعليمية
+       1. بيانات اللاعبين والبيادق الحيوانية الأربعة (مطابقة للصورة تماماً)
        ========================================================================= */
-    const ARABIC_DIGITS = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
-    function toArNum(num) {
-      return String(num).replace(/\d/g, d => ARABIC_DIGITS[Number(d)]);
-    }
-
-    // إعدادات اللاعبين الأربعة بالألوان العربية
-    const PLAYER_PRESETS = [
-      { id: 0, defaultName: "اللَّاعِبُ ١", colorName: "الأَحْمَر", bg: "#ef4444", dark: "#b91c1c", lightBg: "#fee2e2", text: "#991b1b" },
-      { id: 1, defaultName: "اللَّاعِبُ ٢", colorName: "الأَزْرَق", bg: "#3b82f6", dark: "#1d4ed8", lightBg: "#dbeafe", text: "#1e40af" },
-      { id: 2, defaultName: "اللَّاعِبُ ٣", colorName: "الأَخْضَر", bg: "#10b981", dark: "#047857", lightBg: "#d1fae5", text: "#065f46" },
-      { id: 3, defaultName: "اللَّاعِبُ ٤", colorName: "الأَصْفَر", bg: "#f59e0b", dark: "#b45309", lightBg: "#fef3c7", text: "#92400e" }
-    ];
-
-    // توليد أيقونة بيدق تعبيري مبتسم بلون اللاعب
-    function getMascotSVG(bg, dark, labelNum) {
-      return `
-        <svg viewBox="0 0 48 54" class="w-full h-full overflow-visible">
-          <ellipse cx="24" cy="49" rx="14" ry="4" fill="rgba(0,0,0,0.22)" />
-          <path d="M10,46 C10,33 15,27 24,27 C33,27 38,33 38,46 Z" fill="${bg}" stroke="#ffffff" stroke-width="2.5" />
-          <circle cx="24" cy="17" r="13" fill="${bg}" stroke="#ffffff" stroke-width="2.5" />
-          <circle cx="19.5" cy="15" r="2.2" fill="#ffffff" />
-          <circle cx="28.5" cy="15" r="2.2" fill="#ffffff" />
-          <circle cx="19.5" cy="15" r="1.1" fill="#0f172a" />
-          <circle cx="28.5" cy="15" r="1.1" fill="#0f172a" />
-          <path d="M19.5,20.5 Q24,24.5 28.5,20.5" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" />
-          <text x="24" y="42" text-anchor="middle" fill="#ffffff" font-family="Tajawal, sans-serif" font-weight="900" font-size="11">${labelNum}</text>
-        </svg>
-      `;
-    }
-
-    // تعريف الخانات الـ 24 باللغة العربية الكاملة
-    const BOARD_TILES = [
-      { num: 1,  type: 'start',  icon: '🚩', label: 'البِدَايَة',   bg: 'bg-emerald-200 border-emerald-500 text-emerald-950' },
-      { num: 2,  type: 'tf',     icon: '❓', label: 'صَحْ / خَطَأ', bg: 'bg-teal-100 border-teal-400 text-teal-950' },
-      { num: 3,  type: 'search', icon: '🔍', label: 'ابْحَثْ',      bg: 'bg-sky-100 border-sky-400 text-sky-950' },
-      { num: 4,  type: 'word',   icon: '📖', label: 'كَلِمَة',      bg: 'bg-purple-100 border-purple-400 text-purple-950' },
-      { num: 5,  type: 'bonus',  icon: '⭐', label: 'مُكَافَأَة +٢', bg: 'bg-amber-200 border-amber-500 text-amber-950' },
-      { num: 6,  type: 'tf',     icon: '❓', label: 'صَحْ / خَطَأ', bg: 'bg-teal-100 border-teal-400 text-teal-950' },
-      { num: 7,  type: 'search', icon: '🔍', label: 'ابْحَثْ',      bg: 'bg-sky-100 border-sky-400 text-sky-950' },
-      { num: 8,  type: 'back',   icon: '↩️', label: 'تَرَاجُع -٢',  bg: 'bg-rose-100 border-rose-400 text-rose-950' },
-      { num: 9,  type: 'word',   icon: '📖', label: 'كَلِمَة',      bg: 'bg-purple-100 border-purple-400 text-purple-950' },
-      { num: 10, type: 'tf',     icon: '❓', label: 'صَحْ / خَطَأ', bg: 'bg-teal-100 border-teal-400 text-teal-950' },
-      { num: 11, type: 'bonus',  icon: '⭐', label: 'مُكَافَأَة +٢', bg: 'bg-amber-200 border-amber-500 text-amber-950' },
-      { num: 12, type: 'search', icon: '🔍', label: 'ابْحَثْ',      bg: 'bg-sky-100 border-sky-400 text-sky-950' },
-      { num: 13, type: 'word',   icon: '📖', label: 'كَلِمَة',      bg: 'bg-purple-100 border-purple-400 text-purple-950' },
-      { num: 14, type: 'back',   icon: '↩️', label: 'تَرَاجُع -٢',  bg: 'bg-rose-100 border-rose-400 text-rose-950' },
-      { num: 15, type: 'tf',     icon: '❓', label: 'صَحْ / خَطَأ', bg: 'bg-teal-100 border-teal-400 text-teal-950' },
-      { num: 16, type: 'search', icon: '🔍', label: 'ابْحَثْ',      bg: 'bg-sky-100 border-sky-400 text-sky-950' },
-      { num: 17, type: 'bonus',  icon: '⭐', label: 'مُكَافَأَة +٢', bg: 'bg-amber-200 border-amber-500 text-amber-950' },
-      { num: 18, type: 'word',   icon: '📖', label: 'كَلِمَة',      bg: 'bg-purple-100 border-purple-400 text-purple-950' },
-      { num: 19, type: 'back',   icon: '↩️', label: 'تَرَاجُع -٢',  bg: 'bg-rose-100 border-rose-400 text-rose-950' },
-      { num: 20, type: 'tf',     icon: '❓', label: 'صَحْ / خَطَأ', bg: 'bg-teal-100 border-teal-400 text-teal-950' },
-      { num: 21, type: 'search', icon: '🔍', label: 'ابْحَثْ',      bg: 'bg-sky-100 border-sky-400 text-sky-950' },
-      { num: 22, type: 'word',   icon: '📖', label: 'كَلِمَة',      bg: 'bg-purple-100 border-purple-400 text-purple-950' },
-      { num: 23, type: 'tf',     icon: '❓', label: 'صَحْ / خَطَأ', bg: 'bg-teal-100 border-teal-400 text-teal-950' },
-      { num: 24, type: 'finish', icon: '🏁', label: 'النِّهَايَة',  bg: 'bg-gradient-to-br from-amber-300 to-yellow-400 border-amber-600 text-amber-950' }
-    ];
-
-    // أشكال حرف الألف والحروف الأخرى
-    const ALIF_FORMS = ['ا', 'أ', 'إ', 'آ'];
-    const NON_ALIF_LETTERS = ['ب', 'ت', 'ث', 'ج', 'د', 'ر', 'س', 'ط', 'ع', 'ف', 'ق', 'ك', 'ل', 'م', 'ن', 'و', 'ي'];
-
-    // كلمات تبدأ بحرف الألف (مشكولة)
-    const ALIF_WORDS = [
-      { ar: 'أَسَدٌ',     emoji: '🦁' },
-      { ar: 'أَرْنَبٌ',   emoji: '🐇' },
-      { ar: 'إِبْرِيقٌ',  emoji: '🫖' },
-      { ar: 'أُذُنٌ',     emoji: '👂' },
-      { ar: 'أَنَانَاسٌ', emoji: '🍍' },
-      { ar: 'أُخْطُبُوطٌ', emoji: '🐙' },
-      { ar: 'إِبْرَةٌ',   emoji: '🪡' },
-      { ar: 'أَخْضَرُ',   emoji: '🟢' },
-      { ar: 'إِصْبَعٌ',   emoji: '☝️' },
-      { ar: 'أُمٌّ',      emoji: '👩' }
-    ];
-
-    // كلمات تبدأ بحروف أخرى (مشكولة)
-    const OTHER_WORDS = [
-      { ar: 'بَطَّةٌ',    emoji: '🦆' },
-      { ar: 'تُفَّاحَةٌ', emoji: '🍎' },
-      { ar: 'جَمَلٌ',     emoji: '🐪' },
-      { ar: 'سَمَكَةٌ',   emoji: '🐟' },
-      { ar: 'قَلَمٌ',     emoji: '✏️' },
-      { ar: 'كِتَابٌ',    emoji: '📕' },
-      { ar: 'شَمْسٌ',     emoji: '☀️' },
-      { ar: 'قَمَرٌ',     emoji: '🌙' },
-      { ar: 'وَرْدَةٌ',   emoji: '🌸' },
-      { ar: 'بَيْتٌ',     emoji: '🏠' },
-      { ar: 'نَجْمَةٌ',   emoji: '⭐' },
-      { ar: 'كُرَةٌ',     emoji: '⚽' }
-    ];
-
-    // أسئلة صحيح أم خطأ باللغة العربية
-    const TF_POOL = [
-      { char: 'ا',  isAlif: true,  hint: 'نَعَمْ! هَذَا هُوَ حَرْفُ الأَلِفِ المُجَرَّدُ (ا).' },
-      { char: 'أ',  isAlif: true,  hint: 'نَعَمْ! هَذَا هُوَ حَرْفُ الأَلِفِ مَعَ الهَمْزَةِ فَوْقَهُ (أ).' },
-      { char: 'إ',  isAlif: true,  hint: 'نَعَمْ! هَذَا هُوَ حَرْفُ الأَلِفِ مَعَ الهَمْزَةِ تَحْتَهُ (إ).' },
-      { char: 'آ',  isAlif: true,  hint: 'نَعَمْ! هَذَا هُوَ الأَلِفُ المَمْدُودُ (آ).' },
-      { char: 'ل',  isAlif: false, hint: 'خَطَأٌ! هَذَا حَرْفُ اللَّامِ (ل) وَلَيْسَ الأَلِفَ.' },
-      { char: 'ب',  isAlif: false, hint: 'خَطَأٌ! هَذَا حَرْفُ البَاءِ (ب) وَلَيْسَ الأَلِفَ.' },
-      { char: 'ك',  isAlif: false, hint: 'خَطَأٌ! هَذَا حَرْفُ الكَافِ (ك) وَلَيْسَ الأَلِفَ.' },
-      { char: 'ط',  isAlif: false, hint: 'خَطَأٌ! هَذَا حَرْفُ الطَّاءِ (ط) وَلَيْسَ الأَلِفَ.' },
-      { char: 'و',  isAlif: false, hint: 'خَطَأٌ! هَذَا حَرْفُ الوَاوِ (و) وَلَيْسَ الأَلِفَ.' },
-      { char: 'ر',  isAlif: false, hint: 'خَطَأٌ! هَذَا حَرْفُ الرَّاءِ (ر) وَلَيْسَ الأَلِفَ.' }
+    const ANIMAL_PLAYERS = [
+      {
+        id: 0,
+        defaultName: "اللَّاعِبُ 1",
+        animalTitle: "الأَرْنَبُ الوَرْدِيُّ",
+        color: "#e5839a",
+        badgeBg: "#e5839a",
+        svgIcon: `
+          <svg viewBox="0 0 40 40" class="w-full h-full">
+            <circle cx="20" cy="20" r="19" fill="#e5839a"/>
+            <ellipse cx="15" cy="11" rx="3" ry="7" fill="#353042"/>
+            <ellipse cx="25" cy="11" rx="3" ry="7" fill="#353042"/>
+            <circle cx="20" cy="23" r="9" fill="#353042"/>
+            <circle cx="17" cy="21" r="1.4" fill="#e5839a"/>
+            <circle cx="23" cy="21" r="1.4" fill="#e5839a"/>
+            <circle cx="20" cy="24" r="1.6" fill="#ffffff"/>
+          </svg>`
+      },
+      {
+        id: 1,
+        defaultName: "اللَّاعِبُ 2",
+        animalTitle: "السَّلْطَعُونُ الأَصْفَرُ",
+        color: "#f6c253",
+        badgeBg: "#f6c253",
+        svgIcon: `
+          <svg viewBox="0 0 40 40" class="w-full h-full">
+            <circle cx="20" cy="20" r="19" fill="#f6c253"/>
+            <path d="M9,15 C6,10 11,8 14,13 M31,15 C34,10 29,8 26,13" stroke="#353042" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+            <ellipse cx="20" cy="23" rx="10" ry="7" fill="#353042"/>
+            <circle cx="17" cy="21" r="1.5" fill="#f6c253"/>
+            <circle cx="23" cy="21" r="1.5" fill="#f6c253"/>
+            <path d="M16,25 Q20,28 24,25" stroke="#f6c253" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+          </svg>`
+      },
+      {
+        id: 2,
+        defaultName: "اللَّاعِبُ 3",
+        animalTitle: "الدُّبُّ الأَزْرَقُ",
+        color: "#5ea8e6",
+        badgeBg: "#5ea8e6",
+        svgIcon: `
+          <svg viewBox="0 0 40 40" class="w-full h-full">
+            <circle cx="20" cy="20" r="19" fill="#5ea8e6"/>
+            <circle cx="12" cy="13" r="4" fill="#353042"/>
+            <circle cx="28" cy="13" r="4" fill="#353042"/>
+            <circle cx="20" cy="22" r="10" fill="#353042"/>
+            <circle cx="20" cy="24" r="4" fill="#5ea8e6"/>
+            <circle cx="16.5" cy="19.5" r="1.4" fill="#5ea8e6"/>
+            <circle cx="23.5" cy="19.5" r="1.4" fill="#5ea8e6"/>
+            <circle cx="20" cy="23" r="1.5" fill="#353042"/>
+          </svg>`
+      },
+      {
+        id: 3,
+        defaultName: "اللَّاعِبُ 4",
+        animalTitle: "الضِّفْدَعُ الأَخْضَرُ",
+        color: "#6bc267",
+        badgeBg: "#6bc267",
+        svgIcon: `
+          <svg viewBox="0 0 40 40" class="w-full h-full">
+            <circle cx="20" cy="20" r="19" fill="#6bc267"/>
+            <circle cx="14" cy="14" r="4.2" fill="#353042"/>
+            <circle cx="26" cy="14" r="4.2" fill="#353042"/>
+            <ellipse cx="20" cy="23" rx="11" ry="8" fill="#353042"/>
+            <circle cx="14" cy="14" r="1.6" fill="#6bc267"/>
+            <circle cx="26" cy="14" r="1.6" fill="#6bc267"/>
+            <path d="M15,24 Q20,28 25,24" stroke="#6bc267" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+          </svg>`
+      }
     ];
 
     /* =========================================================================
-       2. المؤثرات الصوتية المدمجة (Web Audio API)
+       2. إحداثيات الخانات الـ 24 على المسار الحلزوني (مطابق للصورة)
        ========================================================================= */
-    let soundEnabled = true;
-    let audioCtx = null;
+    const BADGE_COLORS = ["#e5839a", "#5ea8e6", "#6bc267", "#f6c253"];
 
-    function getAudioCtx() {
-      if (!audioCtx) {
-        const AudioContext = window.AudioContext || window.webkitAudioContext;
-        if (AudioContext) audioCtx = new AudioContext();
+    // 24 خانة مرتبة في مسار حلزوني متواصل من البداية (1) إلى النهاية (24)
+    const BOARD_PATH_COORDS = [
+      // الصف العلوي من اليسار إلى اليمين
+      { num: 1,  x: 155, y: 86,  w: 84, h: 48, rot: 0,   type: 'start',  icon: '🚩', label: 'البِدَايَة' },
+      { num: 2,  x: 248, y: 86,  w: 84, h: 48, rot: 0,   type: 'tf',     icon: '❓', label: 'صَحْ/خَطَأ' },
+      { num: 3,  x: 341, y: 86,  w: 84, h: 48, rot: 0,   type: 'search', icon: '🔍', label: 'ابْحَثْ' },
+      { num: 4,  x: 434, y: 86,  w: 84, h: 48, rot: 0,   type: 'word',   icon: '📖', label: 'كَلِمَةٌ' },
+      { num: 5,  x: 527, y: 86,  w: 84, h: 48, rot: 0,   type: 'bonus',  icon: '⭐', label: 'مُكَافَأَة' },
+      { num: 6,  x: 620, y: 86,  w: 84, h: 48, rot: 0,   type: 'tf',     icon: '❓', label: 'صَحْ/خَطَأ' },
+      { num: 7,  x: 713, y: 86,  w: 84, h: 48, rot: 4,   type: 'search', icon: '🔍', label: 'ابْحَثْ' },
+      // الانعطاف الأيمن للأسفل
+      { num: 8,  x: 804, y: 105, w: 80, h: 48, rot: 26,  type: 'back',   icon: '↩️', label: 'تَرَاجُعٌ' },
+      { num: 9,  x: 862, y: 168, w: 78, h: 48, rot: 62,  type: 'word',   icon: '📖', label: 'كَلِمَةٌ' },
+      { num: 10, x: 865, y: 254, w: 78, h: 48, rot: 105, type: 'tf',     icon: '❓', label: 'صَحْ/خَطَأ' },
+      // الدخول إلى الحلقة الوسطى نحو القلب
+      { num: 11, x: 805, y: 318, w: 80, h: 46, rot: 152, type: 'bonus',  icon: '⭐', label: 'مُكَافَأَة' },
+      { num: 12, x: 715, y: 332, w: 82, h: 46, rot: 178, type: 'search', icon: '🔍', label: 'ابْحَثْ' },
+      { num: 13, x: 623, y: 332, w: 82, h: 46, rot: 180, type: 'word',   icon: '📖', label: 'كَلِمَةٌ' },
+      // الالتفاف في وسط الحلزون حول القمر والعصفور
+      { num: 14, x: 528, y: 318, w: 80, h: 46, rot: 205, type: 'back',   icon: '↩️', label: 'تَرَاجُعٌ' },
+      { num: 15, x: 525, y: 245, w: 80, h: 46, rot: 335, type: 'tf',     icon: '❓', label: 'صَحْ/خَطَأ' },
+      { num: 16, x: 615, y: 222, w: 82, h: 46, rot: 0,   type: 'search', icon: '🔍', label: 'ابْحَثْ' },
+      { num: 17, x: 705, y: 222, w: 82, h: 46, rot: 5,   type: 'bonus',  icon: '⭐', label: 'مُكَافَأَة' },
+      // الخروج من الحلزون نحو المسار السفلي الطويل
+      { num: 18, x: 778, y: 392, w: 82, h: 48, rot: 148, type: 'word',   icon: '📖', label: 'كَلِمَةٌ' },
+      { num: 19, x: 690, y: 416, w: 84, h: 48, rot: 178, type: 'back',   icon: '↩️', label: 'تَرَاجُعٌ' },
+      { num: 20, x: 598, y: 416, w: 84, h: 48, rot: 180, type: 'tf',     icon: '❓', label: 'صَحْ/خَطَأ' },
+      { num: 21, x: 506, y: 416, w: 84, h: 48, rot: 180, type: 'search', icon: '🔍', label: 'ابْحَثْ' },
+      // القوس الأيسر الصاعد نحو النهاية (END)
+      { num: 22, x: 350, y: 468, w: 84, h: 48, rot: 180, type: 'word',   icon: '📖', label: 'كَلِمَةٌ' },
+      { num: 23, x: 256, y: 468, w: 84, h: 48, rot: 185, type: 'tf',     icon: '❓', label: 'صَحْ/خَطَأ' },
+      { num: 24, x: 145, y: 418, w: 88, h: 52, rot: 270, type: 'finish', icon: '🏁', label: 'النِّهَايَة' }
+    ];
+
+    /* =========================================================================
+       3. المحتوى التعليمي لحرف الألف
+       ========================================================================= */
+    const ALIF_FORMS = ['ا', 'أ', 'إ', 'آ'];
+    const OTHER_LETTERS = ['ب', 'ت', 'ث', 'ج', 'د', 'ر', 'س', 'ط', 'ع', 'ف', 'ق', 'ك', 'ل', 'م', 'ن', 'و', 'ي'];
+
+    const ALIF_WORDS = [
+      { word: 'أَسَدٌ',     emoji: '🦁' },
+      { word: 'أَرْنَبٌ',   emoji: '🐇' },
+      { word: 'إِبْرِيقٌ',  emoji: '🫖' },
+      { word: 'أُذُنٌ',     emoji: '👂' },
+      { word: 'أَنَانَاسٌ', emoji: '🍍' },
+      { word: 'أُخْطُبُوطٌ', emoji: '🐙' },
+      { word: 'إِبْرَةٌ',   emoji: '🪡' },
+      { word: 'أَخْضَرُ',   emoji: '🟢' },
+      { word: 'إِصْبَعٌ',   emoji: '☝️' },
+      { word: 'أُمٌّ',      emoji: '👩' }
+    ];
+
+    const NON_ALIF_WORDS = [
+      { word: 'بَطَّةٌ',    emoji: '🦆' },
+      { word: 'تُفَّاحَةٌ', emoji: '🍎' },
+      { word: 'جَمَلٌ',     emoji: '🐪' },
+      { word: 'سَمَكَةٌ',   emoji: '🐟' },
+      { word: 'قَلَمٌ',     emoji: '✏️' },
+      { word: 'كِتَابٌ',    emoji: '📕' },
+      { word: 'شَمْسٌ',     emoji: '☀️' },
+      { word: 'قَمَرٌ',     emoji: '🌙' },
+      { word: 'وَرْدَةٌ',   emoji: '🌸' },
+      { word: 'كُرَةٌ',     emoji: '⚽' }
+    ];
+
+    const TF_QUESTIONS = [
+      { char: 'ا', isAlif: true,  explain: 'نَعَمْ! هَذَا هُوَ حَرْفُ الأَلِفِ (ا).' },
+      { char: 'أ', isAlif: true,  explain: 'نَعَمْ! هَذَا حَرْفُ الأَلِفِ مَعَ الهَمْزَةِ فَوْقَهُ (أ).' },
+      { char: 'إ', isAlif: true,  explain: 'نَعَمْ! هَذَا حَرْفُ الأَلِفِ مَعَ الهَمْزَةِ تَحْتَهُ (إ).' },
+      { char: 'آ', isAlif: true,  explain: 'نَعَمْ! هَذَا هُوَ الأَلِفُ المَمْدُودُ (آ).' },
+      { char: 'ل', isAlif: false, explain: 'خَطَأٌ! هَذَا حَرْفُ اللَّامِ (ل) وَلَيْسَ الأَلِفَ.' },
+      { char: 'ك', isAlif: false, explain: 'خَطَأٌ! هَذَا حَرْفُ الكَافِ (ك) وَلَيْسَ الأَلِفَ.' },
+      { char: 'ب', isAlif: false, explain: 'خَطَأٌ! هَذَا حَرْفُ البَاءِ (ب) وَلَيْسَ الأَلِفَ.' },
+      { char: 'ط', isAlif: false, explain: 'خَطَأٌ! هَذَا حَرْفُ الطَّاءِ (ط) وَلَيْسَ الأَلِفَ.' },
+      { char: 'و', isAlif: false, explain: 'خَطَأٌ! هَذَا حَرْفُ الوَاوِ (و) وَلَيْسَ الأَلِفَ.' }
+    ];
+
+    /* =========================================================================
+       4. المؤثرات الصوتية المدمجة (Web Audio API)
+       ========================================================================= */
+    let isSoundOn = true;
+    let audioContext = null;
+
+    function getAudio() {
+      if (!audioContext) {
+        const Ctx = window.AudioContext || window.webkitAudioContext;
+        if (Ctx) audioContext = new Ctx();
       }
-      if (audioCtx && audioCtx.state === 'suspended') {
-        audioCtx.resume();
+      if (audioContext && audioContext.state === 'suspended') {
+        audioContext.resume();
       }
-      return audioCtx;
+      return audioContext;
     }
 
-    function playTone(freq, type = 'sine', duration = 0.15, delay = 0, gainVal = 0.15) {
-      if (!soundEnabled) return;
+    function playBeep(freq, type = 'sine', dur = 0.14, delay = 0, vol = 0.14) {
+      if (!isSoundOn) return;
       try {
-        const ctx = getAudioCtx();
+        const ctx = getAudio();
         if (!ctx) return;
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
         osc.type = type;
         osc.frequency.setValueAtTime(freq, ctx.currentTime + delay);
-        gain.gain.setValueAtTime(gainVal, ctx.currentTime + delay);
-        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + delay + duration);
+        gain.gain.setValueAtTime(vol, ctx.currentTime + delay);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + delay + dur);
         osc.connect(gain);
         gain.connect(ctx.destination);
         osc.start(ctx.currentTime + delay);
-        osc.stop(ctx.currentTime + delay + duration);
+        osc.stop(ctx.currentTime + delay + dur);
       } catch (e) {}
     }
 
-    const sfx = {
-      click: () => playTone(520, 'triangle', 0.08, 0, 0.12),
+    const soundFX = {
+      click: () => playBeep(540, 'triangle', 0.08, 0, 0.12),
       dice: () => {
         for (let i = 0; i < 6; i++) {
-          playTone(230 + Math.random() * 310, 'square', 0.05, i * 0.07, 0.08);
+          playBeep(240 + Math.random() * 280, 'square', 0.05, i * 0.07, 0.07);
         }
       },
-      step: () => playTone(460, 'sine', 0.09, 0, 0.12),
-      success: () => {
-        playTone(523.25, 'triangle', 0.14, 0, 0.18);
-        playTone(659.25, 'triangle', 0.14, 0.1, 0.18);
-        playTone(783.99, 'triangle', 0.25, 0.2, 0.2);
+      step: () => playBeep(480, 'sine', 0.08, 0, 0.12),
+      winChallenge: () => {
+        playBeep(523.25, 'triangle', 0.13, 0, 0.16);
+        playBeep(659.25, 'triangle', 0.13, 0.09, 0.16);
+        playBeep(783.99, 'triangle', 0.24, 0.18, 0.18);
       },
-      fail: () => {
-        playTone(310, 'sawtooth', 0.18, 0, 0.12);
-        playTone(230, 'sawtooth', 0.28, 0.16, 0.12);
-      },
-      bonus: () => {
-        playTone(587.33, 'sine', 0.12, 0, 0.16);
-        playTone(880, 'sine', 0.24, 0.1, 0.18);
+      loseChallenge: () => {
+        playBeep(310, 'sawtooth', 0.16, 0, 0.11);
+        playBeep(220, 'sawtooth', 0.26, 0.14, 0.11);
       },
       victory: () => {
-        const notes = [523.25, 659.25, 783.99, 1046.5, 783.99, 1046.5];
-        notes.forEach((n, idx) => playTone(n, 'triangle', 0.2, idx * 0.13, 0.2));
+        const melody = [523.25, 659.25, 783.99, 1046.5, 783.99, 1046.5];
+        melody.forEach((f, idx) => playBeep(f, 'triangle', 0.18, idx * 0.12, 0.18));
       }
     };
 
     function toggleSound() {
-      soundEnabled = !soundEnabled;
-      document.getElementById('sound-icon').textContent = soundEnabled ? '🔊' : '🔇';
-      document.getElementById('sound-label').textContent = soundEnabled ? 'الصَّوْتُ' : 'صَامِتٌ';
-      if (soundEnabled) sfx.click();
+      isSoundOn = !isSoundOn;
+      document.getElementById('sound-icon').textContent = isSoundOn ? '🔊' : '🔇';
+      document.getElementById('sound-text').textContent = isSoundOn ? 'الصَّوْتُ' : 'صَامِتٌ';
+      if (isSoundOn) soundFX.click();
     }
 
     /* =========================================================================
-       3. حالة اللعبة العامة
+       5. حالة اللعبة وإعداد اللاعبين
        ========================================================================= */
-    let selectedPlayerCount = 2;
+    let selectedCount = 2;
     let players = [];
-    let currentPlayerIndex = 0;
-    let turnPhase = 'ROLL'; // 'ROLL' | 'MOVE' | 'EVENT' | 'ANIMATING' | 'GAMEOVER'
-    let currentDiceValue = 1;
-    let targetTileNum = null;
-    let pendingPostModalAction = null;
-    let isDraggingPawn = false;
+    let currentPlayerIdx = 0;
+    let phase = 'ROLL'; // 'ROLL' | 'MOVE' | 'ANIMATING' | 'MODAL' | 'END'
+    let targetTileNumber = null;
+    let postModalCallback = null;
+    let draggingPawn = false;
 
-    /* =========================================================================
-       4. شاشة البداية وإعداد اللاعبين
-       ========================================================================= */
-    function initSetupScreen() {
+    function initSetup() {
       selectPlayerCount(2);
     }
 
     function selectPlayerCount(count) {
-      sfx.click();
-      selectedPlayerCount = count;
+      soundFX.click();
+      selectedCount = count;
 
       [2, 3, 4].forEach(n => {
-        const btn = document.getElementById(`count-btn-${n}`);
+        const btn = document.getElementById(`btn-count-${n}`);
         if (n === count) {
-          btn.className = "count-btn btn-3d py-3 px-3 rounded-2xl font-extrabold text-base sm:text-lg border-2 bg-sky-500 text-white border-sky-700";
+          btn.className = "btn-pop py-2.5 px-3 rounded-2xl font-black text-sm sm:text-base border-2 bg-[#f8c646] text-[#2e293a] border-[#2e293a]";
         } else {
-          btn.className = "count-btn btn-3d py-3 px-3 rounded-2xl font-extrabold text-base sm:text-lg border-2 bg-white text-sky-950 border-sky-300";
+          btn.className = "btn-pop py-2.5 px-3 rounded-2xl font-black text-sm sm:text-base border-2 bg-[#474254] text-white border-[#353042]";
         }
       });
 
-      const container = document.getElementById('players-config-list');
-      container.innerHTML = '';
+      const grid = document.getElementById('setup-players-grid');
+      grid.innerHTML = '';
 
       for (let i = 0; i < count; i++) {
-        const preset = PLAYER_PRESETS[i];
+        const p = ANIMAL_PLAYERS[i];
         const card = document.createElement('div');
-        card.className = "flex items-center gap-3 p-3 rounded-2xl border-2 bg-white shadow-sm";
-        card.style.borderColor = preset.bg;
+        card.className = "flex items-center gap-3 bg-[#474254] p-3 rounded-2xl border-2";
+        card.style.borderColor = p.color;
 
         card.innerHTML = `
-          <div class="w-11 h-12 shrink-0">
-            ${getMascotSVG(preset.bg, preset.dark, toArNum(i + 1))}
-          </div>
+          <div class="animal-token shrink-0">${p.svgIcon}</div>
           <div class="flex-1 min-w-0">
-            <label class="block text-xs font-extrabold" style="color: ${preset.text};">
-              البَيْدَقُ ${preset.colorName}
+            <label class="block text-xs font-extrabold" style="color: ${p.color};">
+              ${p.animalTitle}
             </label>
-            <input type="text" id="player-name-input-${i}" value="${preset.defaultName}" maxlength="16"
-              placeholder="اُكْتُبِ اسْمَ اللَّاعِبِ"
-              class="w-full mt-1 px-3 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-slate-900 font-bold text-sm focus:outline-none focus:border-sky-500" />
+            <input type="text" id="input-player-name-${i}" value="${p.defaultName}" maxlength="15"
+              class="w-full mt-1 px-3 py-1.5 rounded-xl bg-[#353042] text-white font-bold text-sm border border-white/15 focus:outline-none focus:border-[#f8c646]" />
           </div>
         `;
-        container.appendChild(card);
+        grid.appendChild(card);
       }
     }
 
     function startGame() {
-      sfx.success();
+      soundFX.winChallenge();
       players = [];
-      for (let i = 0; i < selectedPlayerCount; i++) {
-        const input = document.getElementById(`player-name-input-${i}`);
-        const rawName = input ? input.value.trim() : '';
-        const preset = PLAYER_PRESETS[i];
+      for (let i = 0; i < selectedCount; i++) {
+        const input = document.getElementById(`input-player-name-${i}`);
+        const base = ANIMAL_PLAYERS[i];
         players.push({
           id: i,
-          name: rawName || preset.defaultName,
-          colorName: preset.colorName,
-          bg: preset.bg,
-          dark: preset.dark,
-          lightBg: preset.lightBg,
-          text: preset.text,
+          name: (input && input.value.trim()) ? input.value.trim() : base.defaultName,
+          animalTitle: base.animalTitle,
+          color: base.color,
+          svgIcon: base.svgIcon,
           position: 1,
           stars: 0
         });
       }
 
-      currentPlayerIndex = 0;
-      turnPhase = 'ROLL';
-      targetTileNum = null;
+      currentPlayerIdx = 0;
+      phase = 'ROLL';
+      targetTileNumber = null;
 
-      document.getElementById('setup-screen').classList.add('hidden');
-      document.getElementById('game-screen').classList.remove('hidden');
-      document.getElementById('btn-restart-top').classList.remove('hidden');
+      document.getElementById('setup-overlay').classList.add('hidden');
+      document.getElementById('play-area').classList.remove('hidden');
+      document.getElementById('btn-new-game').classList.remove('hidden');
 
-      renderBoard();
-      updateScoreboard();
-      updateTurnUI();
-      setTimeout(drawSerpentinePath, 60);
+      renderPlayersDock();
+      renderSVGBoard();
+      updateTurnHUD();
     }
 
     /* =========================================================================
-       5. رسم المسار الحلزوني (٢٤ خانة) والبيادق التعبيرية
+       6. رسم المسار الحلزوني (24 خانة) والبيادق داخل SVG
        ========================================================================= */
-    function getGridColumns() {
-      return window.innerWidth >= 640 ? 6 : 4;
-    }
+    function renderSVGBoard() {
+      const tilesLayer = document.getElementById('board-tiles-layer');
+      const pawnsLayer = document.getElementById('board-pawns-layer');
+      tilesLayer.innerHTML = '';
+      pawnsLayer.innerHTML = '';
 
-    // ترتيب الخانات في مسار حلزوني متواصل مع اتجاه RTL
-    function getSerpentineOrderedTiles() {
-      const cols = getGridColumns();
-      const rows = Math.ceil(BOARD_TILES.length / cols);
-      const ordered = [];
+      BOARD_PATH_COORDS.forEach((tile, idx) => {
+        const isEven = tile.num % 2 === 0;
+        const fillColor = tile.num === 24 ? '#fef08a' : (isEven ? '#ffffff' : '#d9d9de');
+        const badgeColor = BADGE_COLORS[idx % BADGE_COLORS.length];
+        const isTarget = (phase === 'MOVE' && tile.num === targetTileNumber);
 
-      for (let r = 0; r < rows; r++) {
-        const slice = BOARD_TILES.slice(r * cols, (r + 1) * cols);
-        if (r % 2 === 1) {
-          slice.reverse();
-        }
-        ordered.push(...slice);
-      }
-      return ordered;
-    }
+        const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+        g.setAttribute('id', `svg-tile-${tile.num}`);
+        g.setAttribute('transform', `translate(${tile.x}, ${tile.y})`);
+        g.setAttribute('class', `track-tile-group ${isTarget ? 'tile-target-highlight' : ''}`);
 
-    function renderBoard() {
-      const grid = document.getElementById('board-grid');
-      grid.innerHTML = '';
-
-      const orderedTiles = getSerpentineOrderedTiles();
-      const activePlayer = players[currentPlayerIndex];
-
-      orderedTiles.forEach(tile => {
-        const isTarget = (turnPhase === 'MOVE' && tile.num === targetTileNum);
-
-        const tileEl = document.createElement('div');
-        tileEl.id = `board-tile-${tile.num}`;
-        tileEl.dataset.tileNum = tile.num;
-        tileEl.className = `tile rounded-2xl border-3 p-1.5 sm:p-2 min-h-[82px] sm:min-h-[98px] flex flex-col justify-between select-none ${tile.bg} ${isTarget ? 'tile-target' : ''}`;
-
-        tileEl.addEventListener('click', () => {
-          if (turnPhase === 'MOVE' && tile.num === targetTileNum) {
-            executePawnMoveToTarget();
+        g.addEventListener('click', () => {
+          if (phase === 'MOVE' && tile.num === targetTileNumber) {
+            movePawnToTarget();
           }
         });
 
-        tileEl.innerHTML = `
-          ${isTarget ? `<div class="here-badge absolute -top-3.5 left-1/2 -translate-x-1/2 bg-amber-400 text-amber-950 border-2 border-white font-black text-[10px] sm:text-xs px-2 py-0.5 rounded-full shadow-md whitespace-nowrap z-30">⬇ هُنَا!</div>` : ''}
-          <div class="flex items-center justify-between w-full">
-            <span class="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-white/95 text-slate-900 font-black text-xs sm:text-sm flex items-center justify-center shadow-sm">
-              ${toArNum(tile.num)}
-            </span>
-            <span class="text-base sm:text-xl leading-none">${tile.icon}</span>
-          </div>
+        // المستطيل المستدير للخانة (بزاوية دوران متماشية مع المنعطف)
+        const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        rect.setAttribute('class', 'tile-shape');
+        rect.setAttribute('x', -tile.w / 2);
+        rect.setAttribute('y', -tile.h / 2);
+        rect.setAttribute('width', tile.w);
+        rect.setAttribute('height', tile.h);
+        rect.setAttribute('rx', 12);
+        rect.setAttribute('fill', fillColor);
+        rect.setAttribute('stroke', '#353042');
+        rect.setAttribute('stroke-width', '3');
+        if (tile.rot !== 0) {
+          rect.setAttribute('transform', `rotate(${tile.rot})`);
+        }
+        g.appendChild(rect);
 
-          <div id="pions-slot-${tile.num}" class="flex flex-wrap items-center justify-center gap-0.5 my-0.5 min-h-[34px] sm:min-h-[40px]">
-          </div>
+        // أيقونة نوع الخانة (🔍 📖 ❓ ⭐ ↩️ 🚩 🏁)
+        const iconText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        iconText.setAttribute('x', '0');
+        iconText.setAttribute('y', '9');
+        iconText.setAttribute('text-anchor', 'middle');
+        iconText.setAttribute('font-size', tile.num === 1 || tile.num === 24 ? '21' : '19');
+        iconText.textContent = tile.icon;
+        g.appendChild(iconText);
 
-          <div class="text-center leading-tight">
-            <div class="text-[11px] sm:text-xs font-black truncate">${tile.label}</div>
-          </div>
-        `;
+        // الدائرة الملونة لرقم الخانة بأرقام عادية (1, 2, 3... 24)
+        const badgeCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        badgeCircle.setAttribute('cx', '0');
+        badgeCircle.setAttribute('cy', -tile.h / 2 - 2);
+        badgeCircle.setAttribute('r', '13');
+        badgeCircle.setAttribute('fill', badgeColor);
+        badgeCircle.setAttribute('stroke', '#353042');
+        badgeCircle.setAttribute('stroke-width', '2');
+        g.appendChild(badgeCircle);
 
-        grid.appendChild(tileEl);
-      });
+        const numText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        numText.setAttribute('x', '0');
+        numText.setAttribute('y', -tile.h / 2 + 2.5);
+        numText.setAttribute('text-anchor', 'middle');
+        numText.setAttribute('fill', '#ffffff');
+        numText.setAttribute('font-family', 'Fredoka, sans-serif');
+        numText.setAttribute('font-weight', '700');
+        numText.setAttribute('font-size', '13');
+        numText.textContent = String(tile.num);
+        g.appendChild(numText);
 
-      // توزيع بيادق اللاعبين على الخانات
-      players.forEach(p => {
-        const slot = document.getElementById(`pions-slot-${p.position}`);
-        if (!slot) return;
+        // مؤشر "هُنَا!" فوق الخانة الهدف
+        if (isTarget) {
+          const hintPill = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+          hintPill.setAttribute('x', '-26');
+          hintPill.setAttribute('y', tile.h / 2 + 4);
+          hintPill.setAttribute('width', '52');
+          hintPill.setAttribute('height', '20');
+          hintPill.setAttribute('rx', '10');
+          hintPill.setAttribute('fill', '#f8c646');
+          hintPill.setAttribute('stroke', '#2e293a');
+          hintPill.setAttribute('stroke-width', '2');
+          g.appendChild(hintPill);
 
-        const isDraggable = (turnPhase === 'MOVE' && p.id === activePlayer.id);
-        const pawnEl = document.createElement('div');
-        pawnEl.id = `pawn-player-${p.id}`;
-        pawnEl.className = `pawn-mascot ${isDraggable ? 'pawn-draggable' : ''}`;
-        pawnEl.title = `${p.name} - الخَانَةُ ${toArNum(p.position)}`;
-        pawnEl.innerHTML = getMascotSVG(p.bg, p.dark, toArNum(p.id + 1));
-
-        if (isDraggable) {
-          attachPawnDragEvents(pawnEl, p);
+          const hintTxt = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+          hintTxt.setAttribute('x', '0');
+          hintTxt.setAttribute('y', tile.h / 2 + 18);
+          hintTxt.setAttribute('text-anchor', 'middle');
+          hintTxt.setAttribute('fill', '#2e293a');
+          hintTxt.setAttribute('font-family', 'Cairo, sans-serif');
+          hintTxt.setAttribute('font-weight', '900');
+          hintTxt.setAttribute('font-size', '11');
+          hintTxt.textContent = 'اُنْقُرْ هُنَا';
+          g.appendChild(hintTxt);
         }
 
-        slot.appendChild(pawnEl);
+        tilesLayer.appendChild(g);
+      });
+
+      // وضع بيادق اللاعبين فوق خاناتهم الحالية
+      const activePlayer = players[currentPlayerIdx];
+      players.forEach((p, idx) => {
+        const tileCoord = BOARD_PATH_COORDS[p.position - 1];
+        if (!tileCoord) return;
+
+        // إزاحة بسيطة إذا اجتمع أكثر من بيدق في نفس الخانة
+        const sameTilePlayers = players.filter(pl => pl.position === p.position);
+        const subIdx = sameTilePlayers.findIndex(pl => pl.id === p.id);
+        const offsetX = (subIdx - (sameTilePlayers.length - 1) / 2) * 18;
+        const offsetY = (subIdx % 2 === 0 ? -4 : 4);
+
+        const isMovable = (phase === 'MOVE' && p.id === activePlayer.id);
+
+        const fo = document.createElementNS('http://www.w3.org/2000/svg', 'foreignObject');
+        fo.setAttribute('x', tileCoord.x + offsetX - 20);
+        fo.setAttribute('y', tileCoord.y + offsetY - 22);
+        fo.setAttribute('width', '42');
+        fo.setAttribute('height', '42');
+        fo.setAttribute('overflow', 'visible');
+
+        const pawnDiv = document.createElement('div');
+        pawnDiv.className = `board-pawn ${isMovable ? 'pawn-active-move' : ''}`;
+        pawnDiv.innerHTML = p.svgIcon;
+        pawnDiv.title = `${p.name} (الخَانَةُ ${p.position})`;
+
+        if (isMovable) {
+          bindDragAndDrop(pawnDiv, p);
+        }
+
+        fo.appendChild(pawnDiv);
+        pawnsLayer.appendChild(fo);
       });
     }
-
-    // رسم الطريق الرملي المتصل بين مراكز الخانات الـ 24
-    function drawSerpentinePath() {
-      const svg = document.getElementById('board-path-svg');
-      const wrapper = document.getElementById('board-wrapper');
-      if (!svg || !wrapper || wrapper.offsetParent === null) return;
-
-      const wrapRect = wrapper.getBoundingClientRect();
-      svg.setAttribute('viewBox', `0 0 ${wrapRect.width} ${wrapRect.height}`);
-
-      const points = [];
-      for (let i = 1; i <= 24; i++) {
-        const el = document.getElementById(`board-tile-${i}`);
-        if (el) {
-          const r = el.getBoundingClientRect();
-          const cx = r.left - wrapRect.left + r.width / 2;
-          const cy = r.top - wrapRect.top + r.height / 2;
-          points.push(`${cx.toFixed(1)},${cy.toFixed(1)}`);
-        }
-      }
-
-      if (points.length > 1) {
-        svg.innerHTML = `
-          <polyline points="${points.join(' ')}"
-            fill="none"
-            stroke="#d97706"
-            stroke-width="18"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            opacity="0.32" />
-          <polyline points="${points.join(' ')}"
-            fill="none"
-            stroke="#ffffff"
-            stroke-width="4"
-            stroke-dasharray="8 8"
-            stroke-linecap="round"
-            stroke-linejoin="round" />
-        `;
-      }
-    }
-
-    window.addEventListener('resize', () => {
-      if (!document.getElementById('game-screen').classList.contains('hidden')) {
-        renderBoard();
-        setTimeout(drawSerpentinePath, 40);
-      }
-    });
 
     /* =========================================================================
-       6. السحب والإفلات بالماوس واللمس للبيدق
+       7. السحب والإفلات بالماوس واللمس للبيدق
        ========================================================================= */
-    function attachPawnDragEvents(pawnEl, player) {
+    function bindDragAndDrop(pawnElement, player) {
       const ghost = document.getElementById('drag-ghost');
 
-      const startDrag = (clientX, clientY) => {
-        if (turnPhase !== 'MOVE') return;
-        isDraggingPawn = true;
-        sfx.click();
-
-        ghost.innerHTML = getMascotSVG(player.bg, player.dark, toArNum(player.id + 1));
+      const onStart = (cx, cy) => {
+        if (phase !== 'MOVE') return;
+        draggingPawn = true;
+        soundFX.click();
+        ghost.innerHTML = player.svgIcon;
         ghost.style.display = 'flex';
-        ghost.style.left = clientX + 'px';
-        ghost.style.top = clientY + 'px';
-        pawnEl.style.opacity = '0.35';
+        ghost.style.left = cx + 'px';
+        ghost.style.top = cy + 'px';
+        pawnElement.style.opacity = '0.35';
       };
 
-      const moveDrag = (clientX, clientY) => {
-        if (!isDraggingPawn) return;
-        ghost.style.left = clientX + 'px';
-        ghost.style.top = clientY + 'px';
+      const onMove = (cx, cy) => {
+        if (!draggingPawn) return;
+        ghost.style.left = cx + 'px';
+        ghost.style.top = cy + 'px';
 
-        const targetEl = document.getElementById(`board-tile-${targetTileNum}`);
+        const targetEl = document.getElementById(`svg-tile-${targetTileNumber}`);
         if (targetEl) {
           const rect = targetEl.getBoundingClientRect();
-          const isOver = (
-            clientX >= rect.left - 14 &&
-            clientX <= rect.right + 14 &&
-            clientY >= rect.top - 14 &&
-            clientY <= rect.bottom + 14
+          const inside = (
+            cx >= rect.left - 16 &&
+            cx <= rect.right + 16 &&
+            cy >= rect.top - 16 &&
+            cy <= rect.bottom + 16
           );
-          targetEl.classList.toggle('tile-drop-hover', isOver);
+          targetEl.classList.toggle('tile-drop-hover', inside);
         }
       };
 
-      const endDrag = (clientX, clientY) => {
-        if (!isDraggingPawn) return;
-        isDraggingPawn = false;
+      const onEnd = (cx, cy) => {
+        if (!draggingPawn) return;
+        draggingPawn = false;
         ghost.style.display = 'none';
-        pawnEl.style.opacity = '1';
+        pawnElement.style.opacity = '1';
 
-        const targetEl = document.getElementById(`board-tile-${targetTileNum}`);
+        const targetEl = document.getElementById(`svg-tile-${targetTileNumber}`);
         if (targetEl) {
           targetEl.classList.remove('tile-drop-hover');
           const rect = targetEl.getBoundingClientRect();
-          const droppedOnTarget = (
-            clientX >= rect.left - 18 &&
-            clientX <= rect.right + 18 &&
-            clientY >= rect.top - 18 &&
-            clientY <= rect.bottom + 18
+          const dropped = (
+            cx >= rect.left - 22 &&
+            cx <= rect.right + 22 &&
+            cy >= rect.top - 22 &&
+            cy <= rect.bottom + 22
           );
-          if (droppedOnTarget) {
-            executePawnMoveToTarget();
+          if (dropped) {
+            movePawnToTarget();
           }
         }
       };
 
-      pawnEl.addEventListener('mousedown', (e) => {
+      pawnElement.addEventListener('mousedown', (e) => {
         e.preventDefault();
-        startDrag(e.clientX, e.clientY);
-
-        const onMouseMove = (ev) => moveDrag(ev.clientX, ev.clientY);
-        const onMouseUp = (ev) => {
-          window.removeEventListener('mousemove', onMouseMove);
-          window.removeEventListener('mouseup', onMouseUp);
-          endDrag(ev.clientX, ev.clientY);
+        onStart(e.clientX, e.clientY);
+        const moveHandler = (ev) => onMove(ev.clientX, ev.clientY);
+        const upHandler = (ev) => {
+          window.removeEventListener('mousemove', moveHandler);
+          window.removeEventListener('mouseup', upHandler);
+          onEnd(ev.clientX, ev.clientY);
         };
-        window.addEventListener('mousemove', onMouseMove);
-        window.addEventListener('mouseup', onMouseUp);
+        window.addEventListener('mousemove', moveHandler);
+        window.addEventListener('mouseup', upHandler);
       });
 
-      pawnEl.addEventListener('touchstart', (e) => {
+      pawnElement.addEventListener('touchstart', (e) => {
         if (e.touches.length > 0) {
-          const t = e.touches[0];
-          startDrag(t.clientX, t.clientY);
+          onStart(e.touches[0].clientX, e.touches[0].clientY);
         }
       }, { passive: true });
 
-      pawnEl.addEventListener('touchmove', (e) => {
-        if (!isDraggingPawn) return;
+      pawnElement.addEventListener('touchmove', (e) => {
+        if (!draggingPawn) return;
         e.preventDefault();
         if (e.touches.length > 0) {
-          const t = e.touches[0];
-          moveDrag(t.clientX, t.clientY);
+          onMove(e.touches[0].clientX, e.touches[0].clientY);
         }
       }, { passive: false });
 
-      pawnEl.addEventListener('touchend', (e) => {
-        if (!isDraggingPawn) return;
+      pawnElement.addEventListener('touchend', (e) => {
+        if (!draggingPawn) return;
         const t = e.changedTouches[0];
-        endDrag(t.clientX, t.clientY);
+        onEnd(t.clientX, t.clientY);
       });
     }
 
     /* =========================================================================
-       7. إدارة الدور والنرد المتحرك وحركة البيدق
+       8. تحديث لوحة اللاعبين الجانبية، النرد المتحرك، والحركة خطوة بخطوة
        ========================================================================= */
-    function updateScoreboard() {
-      const list = document.getElementById('scoreboard-list');
-      list.innerHTML = '';
+    function renderPlayersDock() {
+      const dock = document.getElementById('players-dock-list');
+      dock.innerHTML = '';
 
       players.forEach((p, idx) => {
-        const isActive = (idx === currentPlayerIndex);
-        const card = document.createElement('div');
-        card.className = `p-2.5 rounded-2xl border-2 flex items-center justify-between transition-all ${
-          isActive ? 'scale-[1.02] shadow-md font-extrabold' : 'opacity-90 bg-white/80'
+        const isCurrent = (idx === currentPlayerIdx);
+        const item = document.createElement('div');
+        item.className = `flex items-center justify-between p-2 rounded-2xl border-2 transition-all ${
+          isCurrent ? 'bg-[#474254] scale-[1.03] shadow-md' : 'bg-[#474254]/55 opacity-85'
         }`;
-        card.style.borderColor = isActive ? p.bg : '#cbd5e1';
-        if (isActive) card.style.backgroundColor = p.lightBg;
+        item.style.borderColor = isCurrent ? '#f8c646' : 'transparent';
 
-        card.innerHTML = `
+        item.innerHTML = `
           <div class="flex items-center gap-2 min-w-0">
-            <div class="w-8 h-9 shrink-0">
-              ${getMascotSVG(p.bg, p.dark, toArNum(p.id + 1))}
+            <div class="w-10 h-10 rounded-full border-2 border-[#2e293a] shrink-0 overflow-hidden bg-white">
+              ${p.svgIcon}
             </div>
             <div class="truncate">
-              <div class="text-sm font-black text-slate-900 truncate">${p.name}</div>
-              <div class="text-xs font-bold text-slate-600">الخَانَةُ <strong>${toArNum(p.position)}</strong> / ٢٤</div>
+              <div class="text-xs sm:text-sm font-black text-white truncate">${p.name}</div>
+              <div class="text-[11px] font-bold text-slate-300">الخَانَةُ <span class="font-num text-[#f8c646]">${p.position}</span>/24</div>
             </div>
           </div>
-          <div class="flex items-center gap-1 bg-white px-2.5 py-1 rounded-xl border border-amber-300 shadow-sm shrink-0">
-            <span class="text-sm">⭐</span>
-            <span class="font-black text-amber-900 text-sm">${toArNum(p.stars)}</span>
+          <div class="flex items-center gap-1 bg-[#353042] px-2 py-1 rounded-xl border border-[#f8c646]/40 shrink-0">
+            <span class="text-xs">⭐</span>
+            <span class="font-num font-black text-xs sm:text-sm text-[#f8c646]">${p.stars}</span>
           </div>
         `;
-        list.appendChild(card);
+        dock.appendChild(item);
       });
     }
 
-    function updateTurnUI() {
-      const p = players[currentPlayerIndex];
-      const banner = document.getElementById('active-player-banner');
-      const mascotMini = document.getElementById('active-player-mascot-mini');
-      const labelEl = document.getElementById('active-player-turn-label');
-      const rollBtn = document.getElementById('btn-roll-dice');
-      const instr = document.getElementById('turn-instruction');
-      const diceBadge = document.getElementById('dice-result-badge');
+    function updateTurnHUD() {
+      const p = players[currentPlayerIdx];
+      document.getElementById('turn-player-avatar').innerHTML = p.svgIcon;
+      document.getElementById('turn-player-name').textContent = `دَوْرُ ${p.name}`;
 
-      banner.style.backgroundColor = p.lightBg;
-      banner.style.borderColor = p.bg;
-      mascotMini.innerHTML = getMascotSVG(p.bg, p.dark, toArNum(p.id + 1));
-      labelEl.style.color = p.text;
+      const medallion = document.getElementById('dice-medallion');
+      const sideBtn = document.getElementById('btn-roll-sidebar');
+      const instr = document.getElementById('turn-instruction-text');
 
-      if (turnPhase === 'ROLL') {
-        rollBtn.disabled = false;
-        labelEl.textContent = `دَوْرُ ${p.name} : اِرْمِ النَّرْدَ!`;
-        diceBadge.textContent = "اِضْغَطْ لِلرَّمْيِ";
-        instr.innerHTML = `دَوْرُ <strong>${p.name}</strong> : اِرْمِ النَّرْدَ 🎲 لِتَتَقَدَّمَ عَلَى المَسَارِ!`;
-      } else if (turnPhase === 'MOVE') {
-        rollBtn.disabled = true;
-        labelEl.textContent = `دَوْرُ ${p.name} : تَقَدَّمْ ${toArNum(currentDiceValue)}`;
-        diceBadge.textContent = `النَّتِيجَةُ : ${toArNum(currentDiceValue)}`;
-        instr.innerHTML = `اِسْحَبْ بَيْدَقَكَ إِلَى الخَانَةِ المُضِيئَةِ (<strong>${toArNum(targetTileNum)}</strong>) أَوِ انْقُرْ عَلَيْهَا!`;
+      if (phase === 'ROLL') {
+        medallion.classList.remove('disabled');
+        sideBtn.disabled = false;
+        instr.innerHTML = `اُنْقُرْ عَلَى النَّرْدِ 🎲 لِتَتَقَدَّمَ عَلَى المَسَارِ!`;
+      } else if (phase === 'MOVE') {
+        medallion.classList.add('disabled');
+        sideBtn.disabled = true;
+        instr.innerHTML = `اِسْحَبْ بَيْدَقَكَ إِلَى الخَانَةِ <span class="font-num text-[#f8c646] font-black">${targetTileNumber}</span> أَوِ انْقُرْ عَلَيْهَا!`;
       } else {
-        rollBtn.disabled = true;
+        medallion.classList.add('disabled');
+        sideBtn.disabled = true;
       }
     }
 
-    function handleRollDiceClick() {
-      if (turnPhase !== 'ROLL') return;
-      turnPhase = 'ANIMATING';
-      updateTurnUI();
-      sfx.dice();
-
-      const roll = Math.floor(Math.random() * 6) + 1;
-      currentDiceValue = roll;
-
-      const faceRotations = {
-        1: 'rotateX(0deg) rotateY(0deg)',
-        2: 'rotateX(0deg) rotateY(-90deg)',
-        3: 'rotateX(0deg) rotateY(180deg)',
-        4: 'rotateX(0deg) rotateY(90deg)',
-        5: 'rotateX(-90deg) rotateY(0deg)',
-        6: 'rotateX(90deg) rotateY(0deg)'
+    function renderDiceFaceDots(num) {
+      const visual = document.getElementById('dice-visual');
+      const dotMap = {
+        1: [4],
+        2: [0, 8],
+        3: [0, 4, 8],
+        4: [0, 2, 6, 8],
+        5: [0, 2, 4, 6, 8],
+        6: [0, 2, 3, 5, 6, 8]
       };
+      const activeIndices = dotMap[num] || [4];
+      let html = '';
+      for (let i = 0; i < 9; i++) {
+        if (activeIndices.includes(i)) {
+          const isRed = (num === 1 || (num === 5 && i === 4));
+          html += `<span class="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full ${isRed ? 'bg-[#e5839a]' : 'bg-[#353042]'}"></span>`;
+        } else {
+          html += `<span></span>`;
+        }
+      }
+      visual.innerHTML = html;
 
-      const cube = document.getElementById('dice-cube');
-      const extraX = 360 * (Math.floor(Math.random() * 2) + 2);
-      const extraY = 360 * (Math.floor(Math.random() * 2) + 2);
-      cube.style.transform = `rotateX(${extraX}deg) rotateY(${extraY}deg) ${faceRotations[roll]}`;
-
-      setTimeout(() => {
-        const player = players[currentPlayerIndex];
-        targetTileNum = Math.min(24, player.position + roll);
-        turnPhase = 'MOVE';
-        updateTurnUI();
-        renderBoard();
-      }, 900);
+      const badge = document.getElementById('dice-badge-num');
+      badge.textContent = String(num);
+      badge.classList.remove('hidden');
     }
 
-    function executePawnMoveToTarget() {
-      if (turnPhase !== 'MOVE' || targetTileNum === null) return;
-      turnPhase = 'ANIMATING';
-      const player = players[currentPlayerIndex];
-      const dest = targetTileNum;
-      targetTileNum = null;
+    function handleRollDice() {
+      if (phase !== 'ROLL') return;
+      phase = 'ANIMATING';
+      updateTurnHUD();
+      soundFX.dice();
 
-      animateStepByStep(player, dest, () => {
-        onPlayerLandedOnTile(player);
+      const visual = document.getElementById('dice-visual');
+      visual.classList.remove('dice-rolling');
+      void visual.offsetWidth;
+      visual.classList.add('dice-rolling');
+
+      const roll = Math.floor(Math.random() * 6) + 1;
+
+      setTimeout(() => {
+        renderDiceFaceDots(roll);
+        const player = players[currentPlayerIdx];
+        targetTileNumber = Math.min(24, player.position + roll);
+        phase = 'MOVE';
+        updateTurnHUD();
+        renderSVGBoard();
+      }, 650);
+    }
+
+    function movePawnToTarget() {
+      if (phase !== 'MOVE' || targetTileNumber === null) return;
+      phase = 'ANIMATING';
+      const player = players[currentPlayerIdx];
+      const dest = targetTileNumber;
+      targetTileNumber = null;
+
+      stepPlayerTo(player, dest, () => {
+        resolveTileArrival(player);
       });
     }
 
-    function animateStepByStep(player, destination, onComplete) {
-      if (player.position === destination) {
-        renderBoard();
-        updateScoreboard();
-        if (onComplete) onComplete();
+    function stepPlayerTo(player, dest, doneCallback) {
+      if (player.position === dest) {
+        renderSVGBoard();
+        renderPlayersDock();
+        if (doneCallback) doneCallback();
         return;
       }
 
-      const step = player.position < destination ? 1 : -1;
-      const interval = setInterval(() => {
-        player.position += step;
-        sfx.step();
-        renderBoard();
-        updateScoreboard();
+      const dir = player.position < dest ? 1 : -1;
+      const timer = setInterval(() => {
+        player.position += dir;
+        soundFX.step();
+        renderSVGBoard();
+        renderPlayersDock();
 
-        if (player.position === destination) {
-          clearInterval(interval);
+        if (player.position === dest) {
+          clearInterval(timer);
           setTimeout(() => {
-            if (onComplete) onComplete();
-          }, 240);
+            if (doneCallback) doneCallback();
+          }, 220);
         }
-      }, 230);
+      }, 220);
     }
 
     /* =========================================================================
-       8. الألعاب المصغرة والأحداث التفاعلية باللغة العربية
+       9. التحديات التفاعلية على الخانات (🔍 / 📖 / ❓ / ⭐ / ↩️)
        ========================================================================= */
-    function onPlayerLandedOnTile(player) {
+    function resolveTileArrival(player) {
       if (player.position >= 24) {
         player.position = 24;
-        renderBoard();
-        updateScoreboard();
-        triggerVictory(player);
+        renderSVGBoard();
+        renderPlayersDock();
+        showVictory(player);
         return;
       }
 
-      const tile = BOARD_TILES[player.position - 1];
-      turnPhase = 'EVENT';
+      const tileData = BOARD_PATH_COORDS[player.position - 1];
+      phase = 'MODAL';
 
-      if (tile.type === 'search') {
-        openSearchMiniGame(player);
-      } else if (tile.type === 'word') {
-        openWordMiniGame(player);
-      } else if (tile.type === 'tf') {
-        openTrueFalseMiniGame(player);
-      } else if (tile.type === 'bonus') {
-        openBonusOrBackModal(player, true);
-      } else if (tile.type === 'back') {
-        openBonusOrBackModal(player, false);
+      if (tileData.type === 'search') {
+        launchSearchAlifGame(player);
+      } else if (tileData.type === 'word') {
+        launchWordAlifGame(player);
+      } else if (tileData.type === 'tf') {
+        launchTrueFalseGame(player);
+      } else if (tileData.type === 'bonus') {
+        launchBonusOrBack(player, true);
+      } else if (tileData.type === 'back') {
+        launchBonusOrBack(player, false);
       } else {
-        nextTurn();
+        advanceTurn();
       }
     }
 
-    function setupModalHeader(icon, title, subtitle, player) {
-      document.getElementById('modal-icon').textContent = icon;
+    function openModalShell(emoji, title, subtitle, player) {
+      document.getElementById('modal-emoji').textContent = emoji;
       document.getElementById('modal-title').textContent = title;
       document.getElementById('modal-subtitle').textContent = subtitle;
-      const tag = document.getElementById('modal-player-tag');
-      tag.textContent = player.name;
-      tag.style.backgroundColor = player.bg;
+      const badge = document.getElementById('modal-player-badge');
+      badge.textContent = player.name;
+      badge.style.backgroundColor = player.color;
 
-      const feedback = document.getElementById('modal-feedback');
-      feedback.classList.add('hidden');
-      document.getElementById('modal-body').innerHTML = '';
+      document.getElementById('modal-result-box').classList.add('hidden');
+      document.getElementById('modal-content-area').innerHTML = '';
 
-      const modal = document.getElementById('event-modal');
+      const modal = document.getElementById('challenge-modal');
       modal.classList.remove('hidden');
       modal.classList.add('flex');
     }
 
-    function showChallengeFeedback(isSuccess, detailMessage, player) {
-      const feedback = document.getElementById('modal-feedback');
-      const emoji = document.getElementById('feedback-emoji');
-      const title = document.getElementById('feedback-title');
-      const desc = document.getElementById('feedback-desc');
+    function showModalOutcome(isCorrect, message, player) {
+      const box = document.getElementById('modal-result-box');
+      const icon = document.getElementById('result-icon');
+      const head = document.getElementById('result-heading');
+      const det = document.getElementById('result-details');
 
-      feedback.classList.remove(
-        'hidden',
-        'bg-emerald-50', 'border-emerald-400', 'text-emerald-950',
-        'bg-rose-50', 'border-rose-400', 'text-rose-950'
-      );
+      box.classList.remove('hidden', 'bg-[#6bc267]/25', 'border-[#6bc267]', 'bg-[#e5839a]/25', 'border-[#e5839a]');
 
-      if (isSuccess) {
-        sfx.success();
+      if (isCorrect) {
+        soundFX.winChallenge();
         player.stars += 1;
-        updateScoreboard();
+        renderPlayersDock();
 
-        feedback.classList.add('bg-emerald-50', 'border-emerald-400', 'text-emerald-950');
-        emoji.textContent = '🌟';
-        title.textContent = 'أَحْسَنْتَ! إِجَابَةٌ صَحِيحَةٌ! حَصَلْتَ عَلَى نَجْمَةٍ ⭐';
-        desc.innerHTML = detailMessage;
-        pendingPostModalAction = () => nextTurn();
+        box.classList.add('bg-[#6bc267]/25', 'border-[#6bc267]');
+        icon.textContent = '🌟';
+        head.textContent = 'أَحْسَنْتَ! إِجَابَةٌ صَحِيحَةٌ! حَصَلْتَ عَلَى نَجْمَةٍ ⭐';
+        det.innerHTML = message;
+        postModalCallback = () => advanceTurn();
       } else {
-        sfx.fail();
-        feedback.classList.add('bg-rose-50', 'border-rose-400', 'text-rose-950');
-        emoji.textContent = '↩️';
-        title.textContent = 'حَاوِلْ مَرَّةً أُخْرَى! إِجَابَةٌ خَاطِئَةٌ، تَتَرَاجَعُ خَانَتَيْنِ ↩️';
-        desc.innerHTML = detailMessage;
-        pendingPostModalAction = () => {
-          const newPos = Math.max(1, player.position - 2);
-          animateStepByStep(player, newPos, () => nextTurn());
+        soundFX.loseChallenge();
+        box.classList.add('bg-[#e5839a]/25', 'border-[#e5839a]');
+        icon.textContent = '↩️';
+        head.textContent = 'إِجَابَةٌ خَاطِئَةٌ! تَتَرَاجَعُ خَانَتَيْنِ (-2)';
+        det.innerHTML = message;
+        postModalCallback = () => {
+          const backPos = Math.max(1, player.position - 2);
+          stepPlayerTo(player, backPos, () => advanceTurn());
         };
       }
     }
 
-    function closeEventModalAndContinue() {
-      sfx.click();
-      const modal = document.getElementById('event-modal');
+    function closeChallengeModal() {
+      soundFX.click();
+      const modal = document.getElementById('challenge-modal');
       modal.classList.add('hidden');
       modal.classList.remove('flex');
-
-      if (pendingPostModalAction) {
-        const action = pendingPostModalAction;
-        pendingPostModalAction = null;
-        action();
+      if (postModalCallback) {
+        const fn = postModalCallback;
+        postModalCallback = null;
+        fn();
       }
     }
 
-    // --- اللعبة المصغرة ١: 🔍 ابحث عن حرف الألف ---
-    function openSearchMiniGame(player) {
-      setupModalHeader(
+    // --- 1. 🔍 البحث عن جميع أشكال الألف بين 6 حروف ---
+    function launchSearchAlifGame(player) {
+      openModalShell(
         '🔍',
         'ابْحَثْ عَنْ حَرْفِ الأَلِف',
-        'اُنْقُرْ عَلَى جَمِيعِ أَشْكَالِ حَرْفِ الأَلِف ثُمَّ اضْغَطْ تَأْكِيدُ الإِجَابَةِ',
+        'اِنْقُرْ عَلَى جَمِيعِ أَشْكَالِ الأَلِف بَيْنَ الحُرُوفِ السِّتَّةِ',
         player
       );
 
-      const alifCount = Math.floor(Math.random() * 2) + 2; // ٢ أو ٣ أشكال للألف
-      const chosenAlifs = [...ALIF_FORMS].sort(() => Math.random() - 0.5).slice(0, alifCount);
-      const chosenOthers = [...NON_ALIF_LETTERS].sort(() => Math.random() - 0.5).slice(0, 6 - alifCount);
+      const numAlifs = Math.floor(Math.random() * 2) + 2; // 2 أو 3
+      const chosenAlifs = [...ALIF_FORMS].sort(() => Math.random() - 0.5).slice(0, numAlifs);
+      const chosenOthers = [...OTHER_LETTERS].sort(() => Math.random() - 0.5).slice(0, 6 - numAlifs);
 
-      const cards = [
-        ...chosenAlifs.map(char => ({ char, isAlif: true, selected: false })),
-        ...chosenOthers.map(char => ({ char, isAlif: false, selected: false }))
+      const tiles = [
+        ...chosenAlifs.map(ch => ({ ch, isAlif: true, picked: false })),
+        ...chosenOthers.map(ch => ({ ch, isAlif: false, picked: false }))
       ].sort(() => Math.random() - 0.5);
 
-      let locked = false;
-
-      const body = document.getElementById('modal-body');
-      body.innerHTML = `
-        <p class="text-sm sm:text-base font-extrabold text-sky-950 text-center mb-3 leading-relaxed">
-          اِنْقُرْ عَلَى جَمِيعِ أَشْكَالِ حَرْفِ الأَلِف (ا ، أ ، إ ، آ) بَيْنَ هَذِهِ الحُرُوفِ السِّتَّةِ :
+      let submitted = false;
+      const area = document.getElementById('modal-content-area');
+      area.innerHTML = `
+        <p class="text-sm sm:text-base font-extrabold text-center text-white mb-3">
+          حَدِّدْ كُلَّ حَرْفِ أَلِفٍ (ا ، أ ، إ ، آ) ثُمَّ اضْغَطْ تَأْكِيدُ الإِجَابَةِ :
         </p>
-        <div id="search-grid" class="grid grid-cols-3 gap-3 max-w-sm mx-auto mb-4"></div>
+        <div id="search-letters-grid" class="grid grid-cols-3 gap-3 max-w-sm mx-auto mb-4"></div>
         <div class="text-center">
-          <button id="btn-validate-search" type="button"
-            class="btn-3d px-6 py-3 rounded-2xl bg-emerald-500 hover:bg-emerald-600 text-white font-black text-base border-2 border-white">
+          <button id="btn-confirm-search" type="button"
+            class="btn-pop px-6 py-2.5 rounded-2xl bg-[#6bc267] text-[#2e293a] font-black text-base border-2 border-[#2e293a]">
             تَأْكِيدُ الإِجَابَةِ ✔
           </button>
         </div>
       `;
 
-      const grid = document.getElementById('search-grid');
-      const cardButtons = [];
+      const grid = document.getElementById('search-letters-grid');
+      const btns = [];
 
-      cards.forEach((item) => {
-        const btn = document.createElement('button');
-        btn.type = 'button';
-        btn.className = "btn-3d h-20 sm:h-24 rounded-2xl bg-amber-50 hover:bg-amber-100 border-3 border-amber-300 font-script text-4xl sm:text-5xl font-bold text-amber-950 flex items-center justify-center";
-        btn.textContent = item.char;
+      tiles.forEach(item => {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = "btn-pop h-20 sm:h-24 rounded-2xl bg-white text-[#2e293a] border-3 border-[#2e293a] font-arabic-letter text-4xl sm:text-5xl font-bold flex items-center justify-center";
+        b.textContent = item.ch;
 
-        btn.addEventListener('click', () => {
-          if (locked) return;
-          sfx.click();
-          item.selected = !item.selected;
-          if (item.selected) {
-            btn.className = "btn-3d h-20 sm:h-24 rounded-2xl bg-sky-500 border-3 border-sky-700 font-script text-4xl sm:text-5xl font-bold text-white flex items-center justify-center scale-95 ring-4 ring-sky-200";
+        b.addEventListener('click', () => {
+          if (submitted) return;
+          soundFX.click();
+          item.picked = !item.picked;
+          if (item.picked) {
+            b.className = "btn-pop h-20 sm:h-24 rounded-2xl bg-[#5ea8e6] text-white border-3 border-[#f8c646] font-arabic-letter text-4xl sm:text-5xl font-bold flex items-center justify-center scale-95";
           } else {
-            btn.className = "btn-3d h-20 sm:h-24 rounded-2xl bg-amber-50 hover:bg-amber-100 border-3 border-amber-300 font-script text-4xl sm:text-5xl font-bold text-amber-950 flex items-center justify-center";
+            b.className = "btn-pop h-20 sm:h-24 rounded-2xl bg-white text-[#2e293a] border-3 border-[#2e293a] font-arabic-letter text-4xl sm:text-5xl font-bold flex items-center justify-center";
           }
         });
 
-        cardButtons.push({ btn, item });
-        grid.appendChild(btn);
+        btns.push({ b, item });
+        grid.appendChild(b);
       });
 
-      document.getElementById('btn-validate-search').addEventListener('click', () => {
-        if (locked) return;
-        locked = true;
-        document.getElementById('btn-validate-search').disabled = true;
+      document.getElementById('btn-confirm-search').addEventListener('click', () => {
+        if (submitted) return;
+        submitted = true;
+        document.getElementById('btn-confirm-search').disabled = true;
 
-        const allAlifsSelected = cards.every(c => (c.isAlif ? c.selected : !c.selected));
+        const success = tiles.every(t => (t.isAlif ? t.picked : !t.picked));
 
-        // إظهار التصحيح البصري على البطاقات الست
-        cardButtons.forEach(({ btn, item }) => {
+        btns.forEach(({ b, item }) => {
           if (item.isAlif) {
-            btn.className = "h-20 sm:h-24 rounded-2xl bg-emerald-500 border-3 border-emerald-700 font-script text-4xl sm:text-5xl font-bold text-white flex items-center justify-center";
-          } else if (item.selected && !item.isAlif) {
-            btn.className = "h-20 sm:h-24 rounded-2xl bg-rose-500 border-3 border-rose-700 font-script text-4xl sm:text-5xl font-bold text-white flex items-center justify-center";
+            b.className = "h-20 sm:h-24 rounded-2xl bg-[#6bc267] text-[#2e293a] border-3 border-[#2e293a] font-arabic-letter text-4xl sm:text-5xl font-bold flex items-center justify-center";
+          } else if (item.picked && !item.isAlif) {
+            b.className = "h-20 sm:h-24 rounded-2xl bg-[#e5839a] text-[#2e293a] border-3 border-[#2e293a] font-arabic-letter text-4xl sm:text-5xl font-bold flex items-center justify-center";
           }
         });
 
-        if (allAlifsSelected) {
-          showChallengeFeedback(
-            true,
-            `أَشْكَالُ حَرْفِ الأَلِفِ هِيَ : <strong>${chosenAlifs.join(' ، ')}</strong>`,
-            player
-          );
-        } else {
-          showChallengeFeedback(
-            false,
-            `أَشْكَالُ حَرْفِ الأَلِفِ الصَّحِيحَةُ كَانَتْ : <strong>${chosenAlifs.join(' ، ')}</strong>`,
-            player
-          );
-        }
+        showModalOutcome(
+          success,
+          `أَشْكَالُ الأَلِفِ هِيَ : <strong class="text-[#f8c646]">${chosenAlifs.join(' ، ')}</strong>`,
+          player
+        );
       });
     }
 
-    // --- اللعبة المصغرة ٢: 📖 اختر الكلمة التي تبدأ بحرف الألف ---
-    function openWordMiniGame(player) {
-      setupModalHeader(
+    // --- 2. 📖 اختيار الكلمة التي تبدأ بحرف الألف ---
+    function launchWordAlifGame(player) {
+      openModalShell(
         '📖',
-        'اِخْتَرِ الكَلِمَةَ الَّتِي تَبْدَأُ بِحَرْفِ الأَلِف',
-        'تَأَمَّلِ الصُّوَرَ وَالكَلِمَاتِ ثُمَّ انْقُرْ عَلَى الكَلِمَةِ الصَّحِيحَةِ',
+        'كَلِمَةٌ تَبْدَأُ بِالأَلِف',
+        'اِخْتَرِ الكَلِمَةَ الصَّحِيحَةَ الَّتِي تَبْدَأُ بِحَرْفِ الأَلِف',
         player
       );
 
-      const correctWord = ALIF_WORDS[Math.floor(Math.random() * ALIF_WORDS.length)];
-      const distractors = [...OTHER_WORDS].sort(() => Math.random() - 0.5).slice(0, 2);
+      const rightWord = ALIF_WORDS[Math.floor(Math.random() * ALIF_WORDS.length)];
+      const wrongWords = [...NON_ALIF_WORDS].sort(() => Math.random() - 0.5).slice(0, 2);
 
-      const options = [
-        { ...correctWord, isCorrect: true },
-        ...distractors.map(w => ({ ...w, isCorrect: false }))
+      const choices = [
+        { ...rightWord, ok: true },
+        ...wrongWords.map(w => ({ ...w, ok: false }))
       ].sort(() => Math.random() - 0.5);
 
-      let locked = false;
-      const body = document.getElementById('modal-body');
-      body.innerHTML = `
-        <p class="text-base sm:text-lg font-extrabold text-purple-950 text-center mb-4">
+      let answered = false;
+      const area = document.getElementById('modal-content-area');
+      area.innerHTML = `
+        <p class="text-base font-extrabold text-center text-white mb-4">
           أَيُّ كَلِمَةٍ مِنْ هَذِهِ الكَلِمَاتِ تَبْدَأُ بِحَرْفِ الأَلِف؟
         </p>
-        <div id="word-options-grid" class="grid grid-cols-3 gap-2.5 sm:gap-3"></div>
+        <div id="word-choices-grid" class="grid grid-cols-3 gap-2.5 sm:gap-3"></div>
       `;
 
-      const grid = document.getElementById('word-options-grid');
-      options.forEach(opt => {
+      const grid = document.getElementById('word-choices-grid');
+      choices.forEach(c => {
         const btn = document.createElement('button');
         btn.type = 'button';
-        btn.className = "btn-3d p-3 sm:p-4 rounded-2xl bg-purple-50 hover:bg-purple-100 border-3 border-purple-300 flex flex-col items-center justify-center text-center";
+        btn.className = "btn-pop p-3 sm:p-4 rounded-2xl bg-white hover:bg-[#fef9c3] text-[#2e293a] border-3 border-[#2e293a] flex flex-col items-center justify-center";
         btn.innerHTML = `
-          <span class="text-4xl sm:text-5xl mb-2">${opt.emoji}</span>
-          <span class="text-lg sm:text-2xl font-black text-purple-950 leading-snug">${opt.ar}</span>
+          <span class="text-4xl sm:text-5xl mb-2">${c.emoji}</span>
+          <span class="text-lg sm:text-2xl font-black">${c.word}</span>
         `;
 
         btn.addEventListener('click', () => {
-          if (locked) return;
-          locked = true;
-
-          if (opt.isCorrect) {
-            btn.className = "p-3 sm:p-4 rounded-2xl bg-emerald-500 border-3 border-emerald-700 text-white flex flex-col items-center justify-center text-center";
-            btn.querySelectorAll('span').forEach(s => s.classList.add('text-white'));
-            showChallengeFeedback(
-              true,
-              `كَلِمَةُ <strong>${correctWord.ar}</strong> ${correctWord.emoji} تَبْدَأُ بِحَرْفِ الأَلِف!`,
-              player
-            );
+          if (answered) return;
+          answered = true;
+          if (c.ok) {
+            btn.className = "p-3 sm:p-4 rounded-2xl bg-[#6bc267] text-[#2e293a] border-3 border-[#2e293a] flex flex-col items-center justify-center";
+            showModalOutcome(true, `كَلِمَةُ <strong>${rightWord.word}</strong> ${rightWord.emoji} تَبْدَأُ بِحَرْفِ الأَلِف!`, player);
           } else {
-            btn.className = "p-3 sm:p-4 rounded-2xl bg-rose-500 border-3 border-rose-700 text-white flex flex-col items-center justify-center text-center";
-            btn.querySelectorAll('span').forEach(s => s.classList.add('text-white'));
-            showChallengeFeedback(
-              false,
-              `الكَلِمَةُ الصَّحِيحَةُ هِيَ <strong>${correctWord.ar}</strong> ${correctWord.emoji} لِأَنَّهَا تَبْدَأُ بِحَرْفِ الأَلِف.`,
-              player
-            );
+            btn.className = "p-3 sm:p-4 rounded-2xl bg-[#e5839a] text-[#2e293a] border-3 border-[#2e293a] flex flex-col items-center justify-center";
+            showModalOutcome(false, `الكَلِمَةُ الصَّحِيحَةُ هِيَ <strong>${rightWord.word}</strong> ${rightWord.emoji}.`, player);
           }
         });
 
@@ -1511,209 +1583,202 @@
       });
     }
 
-    // --- اللعبة المصغرة ٣: ❓ صحيح أم خطأ؟ ---
-    function openTrueFalseMiniGame(player) {
-      setupModalHeader(
+    // --- 3. ❓ صحيح أم خطأ ---
+    function launchTrueFalseGame(player) {
+      openModalShell(
         '❓',
         'صَحِيحٌ أَمْ خَطَأٌ؟',
-        'اُنْظُرْ جَيِّدًا إِلَى الحَرْفِ المَعْرُوضِ :',
+        'هَلْ هَذَا الحَرْفُ هُوَ حَرْفُ الأَلِف؟',
         player
       );
 
-      const item = TF_POOL[Math.floor(Math.random() * TF_POOL.length)];
-      let locked = false;
+      const q = TF_QUESTIONS[Math.floor(Math.random() * TF_QUESTIONS.length)];
+      let done = false;
 
-      const body = document.getElementById('modal-body');
-      body.innerHTML = `
+      const area = document.getElementById('modal-content-area');
+      area.innerHTML = `
         <div class="text-center">
-          <p class="text-base sm:text-lg font-extrabold text-teal-950 mb-3">
-            هَلْ هَذَا الحَرْفُ هُوَ حَرْفُ الأَلِف؟
-          </p>
-          <div class="w-32 h-32 sm:w-36 sm:h-36 mx-auto rounded-3xl bg-teal-50 border-4 border-teal-400 shadow-inner flex items-center justify-center font-script text-7xl sm:text-8xl font-bold text-teal-950 mb-5">
-            ${item.char}
+          <div class="w-32 h-32 sm:w-36 sm:h-36 mx-auto rounded-3xl bg-white text-[#2e293a] border-4 border-[#f8c646] shadow-lg flex items-center justify-center font-arabic-letter text-7xl sm:text-8xl font-bold mb-5">
+            ${q.char}
           </div>
           <div class="grid grid-cols-2 gap-3 max-w-sm mx-auto">
-            <button id="btn-tf-true" type="button"
-              class="btn-3d py-3.5 px-4 rounded-2xl bg-emerald-500 hover:bg-emerald-600 text-white font-black text-lg border-2 border-white flex items-center justify-center gap-2">
-              <span>صَحِيحٌ ✔</span>
+            <button id="tf-btn-yes" type="button"
+              class="btn-pop py-3.5 px-4 rounded-2xl bg-[#6bc267] text-[#2e293a] font-black text-lg border-2 border-[#2e293a]">
+              صَحِيحٌ ✔
             </button>
-            <button id="btn-tf-false" type="button"
-              class="btn-3d py-3.5 px-4 rounded-2xl bg-rose-500 hover:bg-rose-600 text-white font-black text-lg border-2 border-white flex items-center justify-center gap-2">
-              <span>خَطَأٌ ✖</span>
+            <button id="tf-btn-no" type="button"
+              class="btn-pop py-3.5 px-4 rounded-2xl bg-[#e5839a] text-[#2e293a] font-black text-lg border-2 border-[#2e293a]">
+              خَطَأٌ ✖
             </button>
           </div>
         </div>
       `;
 
-      const handleAnswer = (userSaysTrue) => {
-        if (locked) return;
-        locked = true;
-        const isCorrect = (userSaysTrue === item.isAlif);
-        showChallengeFeedback(isCorrect, item.hint, player);
+      const checkTF = (val) => {
+        if (done) return;
+        done = true;
+        showModalOutcome(val === q.isAlif, q.explain, player);
       };
 
-      document.getElementById('btn-tf-true').addEventListener('click', () => handleAnswer(true));
-      document.getElementById('btn-tf-false').addEventListener('click', () => handleAnswer(false));
+      document.getElementById('tf-btn-yes').addEventListener('click', () => checkTF(true));
+      document.getElementById('tf-btn-no').addEventListener('click', () => checkTF(false));
     }
 
-    // --- خانة المكافأة ⭐ (+٢) وخانة التراجع ↩️ (-٢) ---
-    function openBonusOrBackModal(player, isBonus) {
+    // --- 4. ⭐ مكافأة (+2) و ↩️ تراجع (-2) ---
+    function launchBonusOrBack(player, isBonus) {
       if (isBonus) {
-        sfx.bonus();
-        setupModalHeader('⭐', 'خَانَةُ المُكَافَأَةِ!', 'حَظٌّ سَعِيدٌ!', player);
-        document.getElementById('modal-body').innerHTML = `
+        soundFX.winChallenge();
+        openModalShell('⭐', 'خَانَةُ المُكَافَأَةِ!', 'حَظٌّ سَعِيدٌ!', player);
+        document.getElementById('modal-content-area').innerHTML = `
           <div class="text-center py-3">
-            <div class="text-5xl mb-3 animate-bounce">🚀⭐</div>
-            <p class="text-lg sm:text-xl font-black text-amber-900 mb-4 leading-relaxed">
-              مُكَافَأَةٌ رَائِعَةٌ! تَقَدَّمْ خَانَتَيْنِ إِلَى الأَمَامِ ⭐ (+٢)
+            <div class="text-5xl mb-3 animate-bounce">⭐🚀</div>
+            <p class="text-lg font-black text-white mb-4">
+              تَقَدَّمْ خَانَتَيْنِ إِلَى الأَمَامِ (+<span class="font-num text-[#f8c646]">2</span>)!
             </p>
-            <button onclick="closeEventModalAndContinue()"
-              class="btn-3d px-7 py-3 rounded-2xl bg-emerald-500 hover:bg-emerald-600 text-white font-black text-base border-2 border-white">
+            <button onclick="closeChallengeModal()"
+              class="btn-pop px-7 py-2.5 rounded-2xl bg-[#6bc267] text-[#2e293a] font-black text-base border-2 border-[#2e293a]">
               تَقَدَّمْ خَانَتَيْنِ ⬅️
             </button>
           </div>
         `;
-        pendingPostModalAction = () => {
-          const newPos = Math.min(24, player.position + 2);
-          animateStepByStep(player, newPos, () => {
+        postModalCallback = () => {
+          const nextPos = Math.min(24, player.position + 2);
+          stepPlayerTo(player, nextPos, () => {
             if (player.position >= 24) {
-              triggerVictory(player);
+              showVictory(player);
             } else {
-              nextTurn();
+              advanceTurn();
             }
           });
         };
       } else {
-        sfx.fail();
-        setupModalHeader('↩️', 'خَانَةُ التَّرَاجُعِ!', 'اِنْتَبِهْ فِي المَرَّةِ القَادِمَةِ...', player);
-        document.getElementById('modal-body').innerHTML = `
+        soundFX.loseChallenge();
+        openModalShell('↩️', 'خَانَةُ التَّرَاجُعِ!', 'تَرَاجَعْ خَانَتَيْنِ...', player);
+        document.getElementById('modal-content-area').innerHTML = `
           <div class="text-center py-3">
             <div class="text-5xl mb-3">↩️😅</div>
-            <p class="text-lg sm:text-xl font-black text-rose-900 mb-4 leading-relaxed">
-              عُذْرًا! تَرَاجَعْ خَانَتَيْنِ إِلَى الخَلْفِ ↩️ (-٢)
+            <p class="text-lg font-black text-white mb-4">
+              تَرَاجَعْ خَانَتَيْنِ إِلَى الخَلْفِ (-<span class="font-num text-[#e5839a]">2</span>)!
             </p>
-            <button onclick="closeEventModalAndContinue()"
-              class="btn-3d px-7 py-3 rounded-2xl bg-rose-500 hover:bg-rose-600 text-white font-black text-base border-2 border-white">
+            <button onclick="closeChallengeModal()"
+              class="btn-pop px-7 py-2.5 rounded-2xl bg-[#e5839a] text-[#2e293a] font-black text-base border-2 border-[#2e293a]">
               تَرَاجَعْ خَانَتَيْنِ ➡️
             </button>
           </div>
         `;
-        pendingPostModalAction = () => {
-          const newPos = Math.max(1, player.position - 2);
-          animateStepByStep(player, newPos, () => nextTurn());
+        postModalCallback = () => {
+          const prevPos = Math.max(1, player.position - 2);
+          stepPlayerTo(player, prevPos, () => advanceTurn());
         };
       }
     }
 
-    function nextTurn() {
-      currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
-      turnPhase = 'ROLL';
-      targetTileNum = null;
-      updateScoreboard();
-      updateTurnUI();
-      renderBoard();
+    function advanceTurn() {
+      currentPlayerIdx = (currentPlayerIdx + 1) % players.length;
+      phase = 'ROLL';
+      targetTileNumber = null;
+      renderPlayersDock();
+      renderSVGBoard();
+      updateTurnHUD();
     }
 
     /* =========================================================================
-       9. نهاية اللعبة وشاشة التتويج
+       10. شاشة الفوز والنوافذ الإضافية
        ========================================================================= */
-    function triggerVictory(winner) {
-      turnPhase = 'GAMEOVER';
-      sfx.victory();
-      launchConfetti();
+    function showVictory(winner) {
+      phase = 'END';
+      soundFX.victory();
+      spawnConfetti();
 
-      document.getElementById('winner-subtitle').textContent =
-        `لَقَدْ وَصَلَ ${winner.name} إِلَى النِّهَايَةِ أَوَّلًا وَفَازَ بِاللُّعْبَةِ!`;
+      document.getElementById('victory-winner-text').textContent =
+        `وَصَلَ ${winner.name} إِلَى النِّهَايَةِ (24) أَوَّلًا وَفَازَ بِالمُغَامَرَةِ!`;
 
-      const sorted = [...players].sort((a, b) => {
+      const ranked = [...players].sort((a, b) => {
         if (a.id === winner.id) return -1;
         if (b.id === winner.id) return 1;
         if (b.position !== a.position) return b.position - a.position;
         return b.stars - a.stars;
       });
 
-      const standingsEl = document.getElementById('final-standings');
-      standingsEl.innerHTML = sorted.map((p, idx) => `
-        <div class="flex items-center justify-between p-2.5 rounded-2xl border ${idx === 0 ? 'bg-amber-100 border-amber-400 font-black' : 'bg-slate-50 border-slate-200 font-bold'}">
+      document.getElementById('victory-standings').innerHTML = ranked.map((p, i) => `
+        <div class="flex items-center justify-between p-2.5 rounded-2xl border ${i === 0 ? 'bg-[#f8c646]/20 border-[#f8c646]' : 'bg-[#353042] border-white/10'}">
           <div class="flex items-center gap-2.5">
-            <span class="text-lg">${idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : '🎖️'}</span>
-            <div class="w-7 h-8 shrink-0">
-              ${getMascotSVG(p.bg, p.dark, toArNum(p.id + 1))}
+            <span class="text-lg">${i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : '🎖️'}</span>
+            <div class="w-8 h-8 rounded-full border-2 border-[#2e293a] overflow-hidden bg-white shrink-0">
+              ${p.svgIcon}
             </div>
-            <span class="text-sm text-slate-900">${p.name}</span>
+            <span class="text-sm font-black text-white">${p.name}</span>
           </div>
-          <div class="flex items-center gap-2.5 text-xs sm:text-sm">
-            <span class="text-slate-600">الخَانَةُ ${toArNum(p.position)} / ٢٤</span>
-            <span class="bg-white px-2.5 py-0.5 rounded-xl border border-amber-300 font-black text-amber-900">⭐ ${toArNum(p.stars)}</span>
+          <div class="flex items-center gap-2.5 text-xs font-bold">
+            <span class="text-slate-300">الخَانَةُ <span class="font-num">${p.position}</span>/24</span>
+            <span class="bg-[#2e293a] px-2.5 py-1 rounded-xl text-[#f8c646] font-num font-black">⭐ ${p.stars}</span>
           </div>
         </div>
       `).join('');
 
-      const modal = document.getElementById('victory-modal');
-      modal.classList.remove('hidden');
-      modal.classList.add('flex');
+      const m = document.getElementById('victory-modal');
+      m.classList.remove('hidden');
+      m.classList.add('flex');
     }
 
-    function launchConfetti() {
-      const colors = ['#ef4444', '#3b82f6', '#10b981', '#f59e0b', '#a855f7', '#ec4899'];
+    function spawnConfetti() {
+      const palette = ['#e5839a', '#f6c253', '#5ea8e6', '#6bc267', '#ffffff'];
       for (let i = 0; i < 65; i++) {
-        const conf = document.createElement('div');
-        conf.className = 'confetti-piece rounded-sm';
-        conf.style.left = Math.random() * 100 + 'vw';
-        conf.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-        conf.style.animationDuration = (Math.random() * 2 + 2.2) + 's';
-        conf.style.animationDelay = (Math.random() * 0.6) + 's';
-        document.body.appendChild(conf);
-        setTimeout(() => conf.remove(), 4800);
+        const piece = document.createElement('div');
+        piece.className = 'confetti-item rounded-sm';
+        piece.style.left = Math.random() * 100 + 'vw';
+        piece.style.backgroundColor = palette[Math.floor(Math.random() * palette.length)];
+        piece.style.animationDuration = (Math.random() * 2 + 2) + 's';
+        piece.style.animationDelay = (Math.random() * 0.5) + 's';
+        document.body.appendChild(piece);
+        setTimeout(() => piece.remove(), 4500);
       }
     }
 
-    /* =========================================================================
-       10. النوافذ الإضافية (قواعد اللعبة وتأكيد الإعادة)
-       ========================================================================= */
     function openRulesModal() {
-      sfx.click();
+      soundFX.click();
       const m = document.getElementById('rules-modal');
       m.classList.remove('hidden');
       m.classList.add('flex');
     }
 
     function closeRulesModal() {
-      sfx.click();
+      soundFX.click();
       const m = document.getElementById('rules-modal');
       m.classList.add('hidden');
       m.classList.remove('flex');
     }
 
-    function confirmRestart() {
-      sfx.click();
-      const m = document.getElementById('confirm-modal');
+    function openConfirmReset() {
+      soundFX.click();
+      const m = document.getElementById('confirm-reset-modal');
       m.classList.remove('hidden');
       m.classList.add('flex');
     }
 
-    function closeConfirmModal() {
-      sfx.click();
-      const m = document.getElementById('confirm-modal');
+    function closeConfirmReset() {
+      soundFX.click();
+      const m = document.getElementById('confirm-reset-modal');
       m.classList.add('hidden');
       m.classList.remove('flex');
     }
 
-    function resetToSetup() {
-      sfx.click();
-      closeConfirmModal();
+    function resetGameToSetup() {
+      soundFX.click();
+      closeConfirmReset();
       document.getElementById('victory-modal').classList.add('hidden');
       document.getElementById('victory-modal').classList.remove('flex');
-      document.getElementById('event-modal').classList.add('hidden');
-      document.getElementById('event-modal').classList.remove('flex');
-      document.getElementById('game-screen').classList.add('hidden');
-      document.getElementById('btn-restart-top').classList.add('hidden');
-      document.getElementById('setup-screen').classList.remove('hidden');
+      document.getElementById('challenge-modal').classList.add('hidden');
+      document.getElementById('challenge-modal').classList.remove('flex');
+      document.getElementById('play-area').classList.add('hidden');
+      document.getElementById('btn-new-game').classList.add('hidden');
+      document.getElementById('setup-overlay').classList.remove('hidden');
     }
 
     window.onload = function () {
-      initSetupScreen();
+      initSetup();
     };
   </script>
 </body>
 </html>
+```
